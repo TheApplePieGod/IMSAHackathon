@@ -11,7 +11,7 @@ interface Props extends Omit<DialogProps, "onClose"> {
     cancelText?: string;
 }
 
-const ConfirmDialog: React.FunctionComponent<Props> = (props) => {
+export const ConfirmDialog = (props: Props) => {
     const { onConfirm, onCancel, title, confirmText, cancelText, simple, ...dialogProps } = props;
 
     return (

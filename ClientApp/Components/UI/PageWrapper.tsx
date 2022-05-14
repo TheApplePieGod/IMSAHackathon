@@ -4,7 +4,11 @@ import { useLocation, useNavigate } from "react-router";
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 
-export const PageWrapper: React.FunctionComponent = (props) => {
+interface Props {
+    children: React.ReactNode | React.ReactNode[];
+}
+
+export const PageWrapper = (props: Props) => {
     const location = useLocation();
     const navigate = useNavigate();
     const theme = useTheme();
