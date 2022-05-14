@@ -1,12 +1,10 @@
-
 // Define message types for this handler
-const MessageType = {
-    None: 0
-};
-Object.freeze(MessageType);
+enum ScaleMessageType {
+    None = 0
+}
 
 // The ScaleGame handler handles messages relating to the ScaleGame
-exports.handleMessage = (sendMessage, messageType, data) => {
+export const handleMessage = (sendMessage: any, messageType: ScaleMessageType, data: string) => {
     switch (messageType) {
         default: break;
         

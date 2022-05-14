@@ -1,6 +1,7 @@
-const express = require('express');
-const ws = require('ws');
-const { handleMessage } = require("./MessageHandler");
+import express from "express";
+import * as ws from "ws";
+import { GameType } from "./Games/GameType";
+import { handleMessage } from "./MessageHandler";
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,7 @@ const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
     socket.on('message', message => {
         // Create a message sending function for use in the message handler
-        const sendMessage = (messageType, gameType, data) => {
+        const sendMessage = (messageType: number, gameType: GameType, data: string) => {
             const message = JSON.stringify({
                 messageType,
                 gameType,
