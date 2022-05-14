@@ -1,4 +1,3 @@
-
 // Define message types for this handler
 const MessageType = {
     None: 0
