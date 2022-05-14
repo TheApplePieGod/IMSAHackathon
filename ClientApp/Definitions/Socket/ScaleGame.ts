@@ -1,3 +1,3 @@
-export enum ScaleGameMessageType {
+export enum ScaleMessageType {
     None = 0
 };
