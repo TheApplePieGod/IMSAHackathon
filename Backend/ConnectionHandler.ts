@@ -10,9 +10,13 @@ export const connectionHandler = (socket: ws.WebSocket, req: IncomingMessage) =>
     const baseUrl = `http://${req.headers.host}`;
     
     // Parse url information
-    const url = new URL(socket.url, baseUrl);
-    const roomId = url.searchParams.get("room");
-    const name = url.searchParams.get("name");
+    let roomId: string | null = null;
+    let name: string | null = null;
+    try {
+        const url = new URL(req.url || "", baseUrl);
+        roomId = url.searchParams.get("room");
+        name = url.searchParams.get("name");
+    } catch {}
 
     // Ensure the roomid and player name were passed in the socket connection
     if (!roomId || !name) {
@@ -55,7 +59,6 @@ export const connectionHandler = (socket: ws.WebSocket, req: IncomingMessage) =>
     // Send the player their own information
     // isCurrent is true because the player is themselves
     player.onPlayerJoin(player, true);
-
 
     socket.on('close', () => {
         // Remove the player from the lobby when the connection is closed
