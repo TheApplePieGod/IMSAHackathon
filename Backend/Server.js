@@ -10,7 +10,20 @@ const appName = "IMSA Hackathon App";
 // Initialize the headless websocket server
 const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
-    socket.on('message', message => handleMessage(message));
+    socket.on('message', message => {
+        // Create a message sending function for use in the message handler
+        const sendMessage = (messageType, gameType, data) => {
+            const message = JSON.stringify({
+                messageType,
+                gameType,
+                data
+            });
+            socket.send(message);
+        }
+
+        // Delegate message to the handleMessage function
+        handleMessage(sendMessage, message);
+    });
 });
 
 // Initialize the main listening HTTP server
