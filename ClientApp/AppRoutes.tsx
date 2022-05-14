@@ -4,6 +4,7 @@ import { createAppTheme } from "./Styles/AppTheme";
 import { PageWrapper } from "./Components/UI/PageWrapper";
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
+import { SocketContextProvider } from "./Game/SocketContext";
 
 const HomePage = React.lazy(() => import("./Components/Pages/HomePage"));
 const AboutPage = React.lazy(() => import("./Components/Pages/AboutPage"));
@@ -22,10 +23,10 @@ export const AppRoutes = () => {
                             <Routes>
                                 <Route path={'/'} element={<HomePage />} />
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
-                                <Route path={'play/:roomIdString/:name'} element={<GameSelectPage />} />
-
-                                <Route path={'account/signout'} element={<></>} />
-                                <Route path={'account/authenticate'} element={<></>} />
+                                <Route
+                                    path={'play/:roomIdString/:name'}
+                                    element={<SocketContextProvider><GameSelectPage /></SocketContextProvider>}
+                                />
 
                                 <Route path={'/*'} element={<NotFoundPage />} />
                             </Routes>

@@ -1,12 +1,13 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { AppRoutes } from "./AppRoutes";
 
 const render = () => {
-    ReactDOM.render(
-        <AppRoutes />,
-        document.getElementById('root')
-    );
+    const rootElem = document.getElementById('root');
+    if (!rootElem) return;
+
+    const root = createRoot(rootElem);
+    root.render(<AppRoutes />);
 };
 render();
 
