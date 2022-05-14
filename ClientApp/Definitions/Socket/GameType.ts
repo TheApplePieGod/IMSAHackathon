@@ -1,4 +1,6 @@
 export enum GameType {
-    None = 0,
-    Scale
+    Unspecified = 0,
+    Scales,
+    PaperFolding,
+    Math
 };

@@ -1,4 +1,4 @@
-export enum GenericMessageType {
+export enum UnspecifiedMessageType {
     None = 0,
     Heartbeat,
     PlayerJoin,

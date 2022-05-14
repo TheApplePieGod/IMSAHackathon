@@ -2,16 +2,18 @@ import { Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { Message } from "../Definitions/Socket/Message";
 import { GameType } from "../Definitions/Socket/GameType";
-import { GenericMessageType } from "../Definitions/Socket/GenericHandler";
+import { UnspecifiedMessageType } from "../Definitions/Socket/UnspecifiedGame";
 import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
+import { useUnspecifiedGame } from "./UnspecifiedGame";
 
 export interface BaseState {
-
+    hostRoomId: string;
 }
 
 const DEFAULT_STATE: BaseState = {
-
+    hostRoomId: ""
 }
 
 export interface SocketContext {
@@ -24,7 +26,7 @@ export interface SocketContext {
 export interface GameContext {
     state: any;
     setState: React.Dispatch<React.SetStateAction<any>>;
-    handleMessage: (msgType: number, data: string, baseState: BaseState, setBaseState: React.Dispatch<React.SetStateAction<BaseState>>) => void;
+    handleMessage: (msgType: number, data: string) => void;
 } 
 
 interface Props {
@@ -46,12 +48,35 @@ export const SocketContextProvider = (props: Props) => {
         //return process.env.NEXT_PUBLIC_IS_PRODUCTION ? "wss" : "ws";
     }
 
+    const getHost = () => {
+        return "localhost:3000"
+    }
+
+    const processMessage = React.useCallback((event: MessageEvent) => {
+        let jsonString = "";
+        if (typeof (event.data) == "string")
+            jsonString = event.data;
+        else {
+            let buffer: ArrayBuffer;
+            if (event.data instanceof ArrayBuffer) {
+                buffer = event.data;
+            } else {
+                return;
+            }
+
+            var enc = new TextDecoder("utf-8");
+            jsonString = enc.decode(buffer);
+        }
+
+        const msg: Message = JSON.parse(jsonString);
+        getGame(msg.gameType).handleMessage(msg.messageType, msg.data);
+    }, []);
+
     const {
         sendMessage,
-        lastMessage,
         readyState,
         getWebSocket
-    } = useWebSocket(`${getProtocol()}://${location.host}?room=${roomIdString}&name=${name}`, {
+    } = useWebSocket(`${getProtocol()}://${getHost()}?room=${roomIdString}&name=${name}`, {
         onOpen: () => { console.log("Websocket connected"); },
         onClose: (e) => {
             console.log(`Websocket close: ${e.reason}`);
@@ -73,7 +98,8 @@ export const SocketContextProvider = (props: Props) => {
             //     closeDelay: 3000
             // }));
         },
-        shouldReconnect: () => false
+        shouldReconnect: () => false,
+        onMessage: processMessage
     });
 
     const sendMessageType = (msgType: number, gameType: GameType, data: string) => {
@@ -87,48 +113,20 @@ export const SocketContextProvider = (props: Props) => {
     const [baseState, setBaseState] = React.useState(DEFAULT_STATE);
 
     const games: Record<GameType, GameContext> = {
-        [GameType.None]: {} as GameContext,
-        [GameType.Scale]: {} as GameContext,
+        [GameType.Unspecified]: useUnspecifiedGame({ sendMessage: sendMessageType, baseState, setBaseState }),
+        [GameType.Scales]: {} as GameContext,
+        [GameType.PaperFolding]: {} as GameContext,
+        [GameType.Math]: {} as GameContext,
     };
 
     const getGame = (type: GameType) => {
         return games[type];
     }
 
-    const processMessage = React.useCallback((event: MessageEvent) => {
-        let jsonString = "";
-        if (typeof (event.data) == "string")
-            jsonString = event.data;
-        else {
-            let buffer: ArrayBuffer;
-            if (event.data instanceof ArrayBuffer) {
-                buffer = event.data;
-            } else {
-                return;
-            }
-
-            var enc = new TextDecoder("utf-8");
-            jsonString = enc.decode(buffer);
-        }
-
-        const msg = JSON.parse(jsonString);
-        const msgType = msg.messageType as number;
-        const gameType = msg.gameType as GameType;
-        const data = msg.Data;
-
-        getGame(gameType).handleMessage(msgType, data, baseState, setBaseState);
-    }, []);
-
-    React.useEffect(() => {
-        if (lastMessage) {
-            processMessage(lastMessage);
-        }
-    }, [lastMessage, processMessage]);
-
     React.useEffect(() => {
         // send heartbeat in order to keep websocket connection alive
         const interval = setInterval(() => {
-            sendMessageType(GenericMessageType.Heartbeat, GameType.None, "");
+            sendMessageType(UnspecifiedMessageType.Heartbeat, GameType.Unspecified, "");
         }, 1000 * 85); // 85 seconds
 
         return () => clearInterval(interval);
