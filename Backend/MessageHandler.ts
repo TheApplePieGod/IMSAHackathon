@@ -1,12 +1,12 @@
-const ws = require('ws');
-const { GameType } = require("./Games/Types");
-const { handleMessage: genericHandler } = require("./GenericHandler");
-const { handleMessage: scaleGame } = require("./Games/ScaleGame");
+import * as ws from "ws";
+import { Messsage } from "./Message";
+import { GameType } from "./Games/GameType";
+import { handleMessage as genericHandler } from "./GenericHandler";
+import { handleMessage as scaleHandler } from "./Games/ScaleGame";
 
-// Message format: { messageType: number, gameType: number, data: string }
-exports.handleMessage = (sendMessage, message) => {
+export const handleMessage = (sendMessage: any, message: ws.RawData) => {
     try {
-        jsn = JSON.parse(message);
+        const jsn: Messsage = JSON.parse(message.toString());
         const messageType = jsn.messageType;
         const gameType = jsn.gameType;
         const data = jsn.data;
@@ -23,7 +23,7 @@ exports.handleMessage = (sendMessage, message) => {
             } break;
 
             case GameType.Scale: {
-                scaleGame(sendMessage, messageType, data);
+                scaleHandler(sendMessage, messageType, data);
             } break;
         }
     } catch(e) {
