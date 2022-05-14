@@ -8,6 +8,8 @@ import { BrowserRouter } from "react-router-dom";
 const HomePage = React.lazy(() => import("./Components/Pages/HomePage"));
 const AboutPage = React.lazy(() => import("./Components/Pages/AboutPage"));
 const NotFoundPage = React.lazy(() => import("./Components/Pages/NotFoundPage"));
+const JoinPage = React.lazy(() => import("./Components/Pages/JoinPage"));
+const GameSelectPage = React.lazy(() => import("./Components/Pages/GameSelectPage"));
 
 export const AppRoutes = () => {
     return (
@@ -19,7 +21,8 @@ export const AppRoutes = () => {
                         <Box>
                             <Routes>
                                 <Route path={'/'} element={<HomePage />} />
-                                <Route path={'about'} element={<AboutPage />} />
+                                <Route path={'join/:roomIdString'} element={<JoinPage/>} />
+                                <Route path={'play/:roomIdString/:name'} element={<GameSelectPage />} />
 
                                 <Route path={'account/signout'} element={<></>} />
                                 <Route path={'account/authenticate'} element={<></>} />
