@@ -5,6 +5,7 @@ import { Lobby } from "./Lobby";
 import { Player } from "./Player";
 import { handleMessage as genericHandler } from "./GenericHandler";
 import { handleMessage as scaleHandler } from "./Games/ScaleGame";
+import { handleMessage as mathHandler } from "./Games/MathGame";
 
 export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData) => {
     try {
@@ -26,6 +27,9 @@ export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData)
 
             case GameType.Scales: {
                 scaleHandler(lobby, player, messageType, data);
+            } break;
+            case GameType.Math: {
+                mathHandler(lobby, player, messageType, data);
             } break;
         }
     } catch(e) {

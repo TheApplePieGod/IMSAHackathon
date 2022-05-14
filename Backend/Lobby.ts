@@ -4,11 +4,18 @@ export class Lobby {
     id: string;
     host: Player;
     clients: Player[];
+    gameState: any;
 
-    constructor(id:string, host: Player) {
+    constructor(id: string, host: Player) {
         this.id = id;
         this.host = host;
         this.clients = [];
+    }
+
+    // Returns a list of all players including the host
+    // The return value should not be permanently stored
+    getAllPlayers = () => {
+        return [...this.clients, this.host];
     }
 
     removeClient = (player: Player) => {
