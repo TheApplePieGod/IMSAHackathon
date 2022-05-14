@@ -1,11 +1,16 @@
+import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { doesLobbyExist, lobbies, Lobby, removeLobby } from "./Lobby";
 import { handleMessage } from "./MessageHandler";
 import { Player } from "./Player";
 import { createRoomId, createUUID } from "./Util";
 
-export const connectionHandler = (socket: ws.WebSocket) => {
-    const url = new URL(socket.url);
+export const connectionHandler = (socket: ws.WebSocket, req: IncomingMessage) => {
+    // We need a base url so that new URL() can parse
+    const baseUrl = `http://${req.headers.host}`;
+    
+    // Parse url information
+    const url = new URL(socket.url, baseUrl);
     const roomId = url.searchParams.get("room");
     const name = url.searchParams.get("name");
 
