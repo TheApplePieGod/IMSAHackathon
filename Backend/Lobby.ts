@@ -56,7 +56,7 @@ export class Lobby {
     }
 }
 
-export const lobbies: Record<string, Lobby> = {};
+export var lobbies: Record<string, Lobby> = {};
 
 export const doesLobbyExist = (roomId: string) => {
     return lobbies.hasOwnProperty(roomId);
