@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "strict": true,
-    "jsx": "react",
     "skipLibCheck": true,
     "lib": [
       "es2020",
       "dom"
     ],
-    "module": "es2020",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "target": "es5",
     "allowJs": true,
@@ -18,7 +17,7 @@
     "node_modules"
   ],
   "include": [
-    "ClientApp/*.ts",
-    "ClientApp/*.tsx"
+    "Backend/*.ts",
+    "Backend/*.tsx"
   ]
 }

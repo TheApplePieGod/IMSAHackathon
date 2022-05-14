@@ -7,7 +7,7 @@
     "build": "SET NODE_OPTIONS=--max-old-space-size=4096 && webpack --mode=development",
     "build:prod": "SET NODE_OPTIONS=--max-old-space-size=4096 && webpack --mode=production",
     "start": "webpack serve --config webpack.config.js --mode development",
-    "server": "node ./Backend/Server.js"
+    "server": "npx ts-node --project tsconfig.server.json ./Backend/Server.ts"
   },
   "author": "",
   "dependencies": {
@@ -29,6 +29,7 @@
     "file-loader": "6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "9.3.0",
+    "ts-node": "^10.7.0",
     "typescript": "4.6.4",
     "webpack": "5.70.0",
     "webpack-cli": "4.9.2",
