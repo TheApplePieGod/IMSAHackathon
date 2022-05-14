@@ -24,7 +24,7 @@ export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData)
                 genericHandler(lobby, player, messageType, data);
             } break;
 
-            case GameType.Scale: {
+            case GameType.Scales: {
                 scaleHandler(lobby, player, messageType, data);
             } break;
         }
