@@ -1,7 +1,9 @@
 import { GameType } from "./Games/GameType"
+import { Lobby } from "./Lobby";
+import { Player } from "./Player";
 
 // Define message types for this handler
-enum GenericMessageType {
+export enum GenericMessageType {
     None = 0,
     Heartbeat,
     PlayerJoin,
@@ -11,13 +13,13 @@ enum GenericMessageType {
 }
 
 // The GenericHandler handles things like the lobby, etc.
-export const handleMessage = (sendMessage: any, messageType: GenericMessageType, data: string) => {
+export const handleMessage = (lobby: Lobby, player: Player, messageType: GenericMessageType, data: string) => {
     switch (messageType) {
         default: break;
 
         // Heartbeat ensures the websocket connection stays alive
         case GenericMessageType.Heartbeat: {
-            sendMessage(GenericMessageType.Heartbeat, GameType.None, "");
+            player.sendMessage(GenericMessageType.Heartbeat, GameType.None, "");
         } break;
     }
 }

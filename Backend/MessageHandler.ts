@@ -1,10 +1,12 @@
 import * as ws from "ws";
 import { Messsage } from "./Message";
 import { GameType } from "./Games/GameType";
+import { Lobby } from "./Lobby";
+import { Player } from "./Player";
 import { handleMessage as genericHandler } from "./GenericHandler";
 import { handleMessage as scaleHandler } from "./Games/ScaleGame";
 
-export const handleMessage = (sendMessage: any, message: ws.RawData) => {
+export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData) => {
     try {
         const jsn: Messsage = JSON.parse(message.toString());
         const messageType = jsn.messageType;
@@ -19,11 +21,11 @@ export const handleMessage = (sendMessage: any, message: ws.RawData) => {
 
             // Messages unrelated to a game get sent to the generic handler
             case GameType.None: {
-                genericHandler(sendMessage, messageType, data);
+                genericHandler(lobby, player, messageType, data);
             } break;
 
             case GameType.Scale: {
-                scaleHandler(sendMessage, messageType, data);
+                scaleHandler(lobby, player, messageType, data);
             } break;
         }
     } catch(e) {
