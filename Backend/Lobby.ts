@@ -8,6 +8,7 @@ export class Lobby {
     constructor(id:string, host: Player) {
         this.id = id;
         this.host = host;
+        this.clients = [];
     }
 
     removeClient = (player: Player) => {

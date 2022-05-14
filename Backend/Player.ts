@@ -44,7 +44,8 @@ export class Player {
         return {
             name: this.name,
             id: this.id,
-            isHost: this.isHost
+            isHost: this.isHost,
+            isCurrent: false
         };
     }
 
@@ -59,7 +60,7 @@ export class Player {
     // information sent in this message is themselves
     onPlayerJoin = (player: Player, isCurrent: boolean = false) => {
         const serialized = player.serialize();
-        serialized["isCurrent"] = isCurrent;
+        serialized.isCurrent = isCurrent;
         this.sendMessage(GenericMessageType.PlayerJoin, GameType.None, JSON.stringify(serialized));
     }
 
