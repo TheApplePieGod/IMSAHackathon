@@ -8,7 +8,8 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const GameSelectPage = () => {
     const socketContext = useSocketContext();
-    
+    const { localPlayer, playerList } = socketContext.baseState;
+
     // If the roomid is zero, we know that the server will send us the new lobby id
     const { roomIdString } = useParams<{ roomIdString: string; }>();
     const roomId = roomIdString == "0" ? socketContext.baseState.hostRoomId : roomIdString;
@@ -25,6 +26,10 @@ const GameSelectPage = () => {
 
     const startGame = (type: GameType) => {
         
+    }
+
+    const kickPlayer = (id: string) => {
+
     }
 
     return (
@@ -100,6 +105,50 @@ const GameSelectPage = () => {
                         <Button onClick={() => startGame(GameType.Math)} variant="contained">Play</Button>
                     </Box>
                 </Card>
+            </Box>
+            <Box>
+                <Typography variant="h4">Players</Typography>
+                <Box sx={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {
+                        playerList.map((elem, i) => {
+                            return (
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "left",
+                                        gap: "0.25rem"
+                                    }}
+                                >
+                                    {(localPlayer?.isHost && playerList.length > 1) &&
+                                        <Button
+                                            variant="outlined"
+                                            style={{ visibility: localPlayer.id == elem.id ? "hidden" : "visible" }}
+                                            sx={{
+                                                padding: 0,
+                                                minWidth: 50,
+                                                maxWidth: 50,
+                                                maxHeight: 22
+                                            }}
+                                            color="secondary"
+                                            onClick={() => kickPlayer(elem.id)}
+                                        >
+                                            Kick
+                                        </Button>
+                                    }
+                                    <Typography variant="body1">{elem.name}</Typography>
+                                    {(elem.id == localPlayer?.id) &&
+                                        <Typography variant="body1" color="primary">(YOU)</Typography>
+                                    }
+                                    {elem.isHost &&
+                                        <Typography variant="body1" color="secondary">[HOST]</Typography>
+                                    }
+                                </Box>
+                            );
+                        })
+                    }
+                </Box>
             </Box>
         </Box>
     )

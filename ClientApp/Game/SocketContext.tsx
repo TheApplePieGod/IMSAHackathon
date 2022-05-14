@@ -5,15 +5,20 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { Message } from "../Definitions/Socket/Message";
 import { GameType } from "../Definitions/Socket/GameType";
 import { UnspecifiedMessageType } from "../Definitions/Socket/UnspecifiedGame";
+import { Player } from "../Definitions/Socket/Player";
 import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
 import { useUnspecifiedGame } from "./UnspecifiedGame";
 
 export interface BaseState {
     hostRoomId: string;
+    playerList: Player[];
+    localPlayer: Player | undefined;
 }
 
 const DEFAULT_STATE: BaseState = {
-    hostRoomId: ""
+    hostRoomId: "",
+    playerList: [],
+    localPlayer: undefined
 }
 
 export interface SocketContext {
