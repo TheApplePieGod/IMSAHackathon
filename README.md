@@ -13,3 +13,7 @@
 ### To Run the Server
 1. Navigate a terminal to the project root
 2. Run `npm run server`
+
+## Focus Points
+1. `Backend folder` contains all of the server code
+2. `Backend/Games` contains all of the server-side game logic
