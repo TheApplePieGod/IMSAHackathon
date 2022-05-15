@@ -6,6 +6,7 @@ import { Player } from "./Player";
 import { handleMessage as genericHandler } from "./GenericHandler";
 import { handleMessage as scaleHandler } from "./Games/ScaleGame";
 import { handleMessage as mathHandler } from "./Games/MathGame";
+import { handleMessage as foldingHandler } from "./Games/FoldingGame";
 
 export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData) => {
     try {
@@ -34,6 +35,9 @@ export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData)
             } break;
             case GameType.Math: {
                 mathHandler(lobby, player, messageType, data);
+            } break;
+            case GameType.PaperFolding: {
+                foldingHandler(lobby, player, messageType, data);
             } break;
         }
     } catch(e) {

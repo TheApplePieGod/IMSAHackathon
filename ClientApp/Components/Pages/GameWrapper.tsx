@@ -147,6 +147,7 @@ const GameWrapper = (props: Props) => {
                                         <OutlinedBox sx={{
                                             height: "200px",
                                             width: "250px",
+                                            overflow: "hidden"
                                         }}>
                                             {props.render(player.id)}
                                         </OutlinedBox>

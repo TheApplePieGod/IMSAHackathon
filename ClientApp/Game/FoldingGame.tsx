@@ -33,11 +33,13 @@ export const useFoldingGame = (props: Props) => {
             case FoldingMessageType.NewSequence: {
                 const parsed = JSON.parse(data);
                 setState(p => {
-                    p.players[parsed.id] = {
+                    p.players[parsed.player] = {
                         instructions: parsed.instructions,
                         sequence: parsed.sequences,
                         points: parsed.points,
-                        cycles: parsed.cycles
+                        cycles: parsed.cycles,
+                        correct: undefined,
+                        total: 0
                     };
 
                     return {
@@ -45,6 +47,21 @@ export const useFoldingGame = (props: Props) => {
                         players: { ...p.players }
                     };
                 });
+            } break;
+            case FoldingMessageType.SubmitSelection: {
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    p.players[parsed.player] = {
+                        ...p.players[parsed.player],
+                        correct: parsed.correct,
+                        total: parsed.total
+                    };
+
+                    return {
+                        ...p,
+                        players: { ...p.players }
+                    };
+                })
             } break;
         }
     }

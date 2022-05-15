@@ -3,6 +3,7 @@ import { Player } from "./Player";
 import { shuffle } from "./Util";
 import { startGame as startScaleGame, endGame as endScaleGame } from "./Games/ScaleGame";
 import { startGame as startMathGame, endGame as endMathGame } from "./Games/MathGame";
+import { startGame as startFoldingGame, endGame as endFoldingGame } from "./Games/FoldingGame";
 import { GenericMessageType } from "./GenericHandler";
 
 export interface LobbyParams {
@@ -37,7 +38,7 @@ export class Lobby {
         this.rotationIndex = 0;
         this.currentRotation = 0;
         this.params = {
-            gameLength: 30,
+            gameLength: 300,
             gameDelay: 5,
             rotationCount: 2
         };
@@ -47,7 +48,7 @@ export class Lobby {
 
     // Updates the game rotation with three random games
     updateGameRotation = () => {
-        this.gameRotation = [GameType.Scales];
+        this.gameRotation = [GameType.PaperFolding];
         // this.gameRotation = [];
         // Object.getOwnPropertyNames(GameType).forEach(p => {
         //     const num = Number(p);
@@ -150,7 +151,7 @@ export class Lobby {
                 endMathGame(this);
             } break;
             case GameType.PaperFolding: {
-
+                endFoldingGame(this);
             } break;
         }
         
@@ -189,7 +190,7 @@ export class Lobby {
                 startMathGame(this);
             } break;
             case GameType.PaperFolding: {
-
+                startFoldingGame(this);
             } break;
         }
 

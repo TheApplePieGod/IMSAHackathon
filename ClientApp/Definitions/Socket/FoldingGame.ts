@@ -1,6 +1,7 @@
 export enum FoldingMessageType {
     None = 0,
     GameStarted,
+    GameEnded,
     SubmitSelection,
     NewSequence,
 };
@@ -28,8 +29,10 @@ export interface Sequence {
 export interface PlayerState {
     instructions: Instruction[];
     sequence: Sequence; // Player's own unique sequence
-    points: number,
-    cycles: number
+    points: number;
+    cycles: number;
+    correct: number | undefined;
+    total: number;
 };
 
 export const instructionSet: Record<Instruction, number[]> = {

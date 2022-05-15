@@ -1,16 +1,18 @@
 import * as React from "react";
-import { styled, Box, useTheme, Typography, Grid } from "@mui/material";
-import { useSocketContext } from "../SocketContext";
-import { GameType } from "../../Definitions/Socket/GameType";
-import { FoldingGameState } from "../FoldingGame";
-import { instructionSet } from "../../Definitions/Socket/FoldingGame";
+import { styled, Box, useTheme, Typography, Grid, Button } from "@mui/material";
 import { Canvas } from "../../Components/UI/Canvas";
+import { useSocketContext } from "../SocketContext";
+
+interface Props {
+    dots: boolean[];
+    setDots: (dots: boolean[]) => void;
+    isLocalPlayer: boolean;
+}
 
 const CANVAS_SIZE = 500;
 
-const FoldingGameInput = () => {
-
-    const [dots, setDots] = React.useState<boolean[]>(Array(16).fill(true));
+const FoldingGameInput = (props: Props) => {
+    const { dots, setDots, isLocalPlayer } = props;
 
     const draw = (ctx: CanvasRenderingContext2D, frameCount: number) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -27,10 +29,7 @@ const FoldingGameInput = () => {
     }
 
     const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
-
-        console.log("in onclick method");
-
-        //if (localPlayer?.id !== props.player) return;
+        if (!isLocalPlayer) return;
 
         const target: Element = e.target as Element;
         const bound = target.getBoundingClientRect();
@@ -46,20 +45,18 @@ const FoldingGameInput = () => {
         let gridX = Math.floor(x / (CANVAS_SIZE / 4));
         let gridY = Math.floor(y / (CANVAS_SIZE / 4));
         
-        console.log(gridX + ", " + gridY);
-
         let newDots = {...dots};
         newDots[4 * gridY + gridX] = !newDots[4 * gridY + gridX];
-
-        console.log(newDots);
 
         setDots(newDots);
     }
 
     return (
-        <Box sx={{ position: "relative", width: "100%", height: "100%", border: "2px solid black"}} onClick={onClick}>
-            <Canvas draw={draw} width={CANVAS_SIZE} height={CANVAS_SIZE} />
-        </Box>
+        <React.Fragment>
+            <Box sx={{ position: "relative", width: "100%", height: "100%", border: "2px solid black"}} onClick={onClick}>
+                <Canvas draw={draw} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+            </Box>
+        </React.Fragment>
     )
 }
 
