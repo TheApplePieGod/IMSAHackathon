@@ -17,7 +17,7 @@
     "node_modules"
   ],
   "include": [
-    "Backend/*.ts",
-    "Backend/*.tsx"
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }
