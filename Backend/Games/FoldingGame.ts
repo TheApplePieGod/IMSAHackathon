@@ -88,6 +88,8 @@ const generateInstructions = () => {
 
 const generateSequence = (instructions: Instruction[]) => {
     let paperSequence: Paper[] = [];
+    let holeSequence : boolean[][] = [];
+
     let startPaper = {layers: [
         [1, 1, 1, 1],
         [1, 1, 1, 1],
@@ -99,7 +101,7 @@ const generateSequence = (instructions: Instruction[]) => {
     for (let i = 0; i < instructions.length; i++) {
         switch (instructions[i]) {
             case Instruction.HalfUp: 
-                let newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                let newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 4; col++) {
                         if (row < 2) newPaper.layers[row][col] *= 2
@@ -110,7 +112,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
             
             case Instruction.HalfDown:
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 4; col++) {
                         if (row >= 2) newPaper.layers[row][col] *= 2
@@ -121,7 +123,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
 
             case Instruction.HalfRight:
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 4; col++) {
                         if (col < 2) newPaper.layers[row][col] *= 2
@@ -132,7 +134,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
 
             case Instruction.HalfLeft: 
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 4; col++) {
                         if (col >= 2) newPaper.layers[row][col] *= 2
@@ -143,7 +145,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
 
             case Instruction.QuarterUp: 
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 3; row > 0; row--) {
                     let changed = false;
                     
@@ -162,7 +164,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
             
             case Instruction.QuarterDown: 
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let row = 0; row < 3; row++) {
                     let changed = false;
                 
@@ -181,7 +183,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
 
             case Instruction.QuarterRight: 
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let col = 3; col > 0; col--) {
                     let changed = false;
                     
@@ -200,7 +202,7 @@ const generateSequence = (instructions: Instruction[]) => {
             break;
 
             case Instruction.QuarterLeft: 
-                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1].layers));
+                newPaper = JSON.parse(JSON.stringify(paperSequence[paperSequence.length - 1]));
                 for (let col = 0; col < 3; col++) {
                     let changed = false;
                 
@@ -222,8 +224,26 @@ const generateSequence = (instructions: Instruction[]) => {
         }
     }
 
-    let holeSequence : boolean[][] = [];
-    // Punch holes randomly here (probably by 1/2 chance of a hole anywhere sbut 1 guaranteed hole, somehow)
+    let spots = [];
+    let finalPaper = paperSequence[paperSequence.length - 1];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (finalPaper.layers[i][j] != 0) {
+                spots.push([i, j]);
+            }
+        }
+    }
+
+    var count;
+    if (spots.length <= 2) count = 1;
+    else if (spots.length <= 4) count = 2;
+    else count = 3;
+    
+    for (let i = 0; i < count; i++) {
+        let index = Math.floor(Math.random() * spots.length);
+        holeSequence[spots[index][0]][spots[index][1]] = true;
+        spots.splice(index, 1);
+    }
 
     return { papers: paperSequence, holes: holeSequence };
 }
@@ -247,13 +267,14 @@ const findSolution = (instructions: Instruction[], sequence: Sequence) => {
 
     for (let i = instructions.length - 1; i > -1; i++) {
         // Reverse engineer the instructions here to get the solution matrix
+        instructions.length;
     }
     
     return solution;
 }
 
 export const handleMessage = (lobby: Lobby, player: Player, messageType: FoldingMessageType, data: string) => {
-
+    
 }
 
 export const startGame = (lobby: Lobby) => {
