@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogTitle, TextField, Box} from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router";
+import Trees from '../UI/Trees';
 
 const JoinPage = () => {
     const navigate = useNavigate();
@@ -32,25 +33,35 @@ const JoinPage = () => {
     }, [])
 
     return (
-        <Dialog open={true} fullWidth maxWidth={'sm'}>
-            <DialogTitle>Enter your name</DialogTitle>
-            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
-                <TextField
-                    label={name == "" ? "Your Name" : ""}
-                    value={name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setName(e.target.value)}
-                    onKeyDown={onKeyDown}
-                />
-                <div style={{ display: "flex", gap: "1rem" }}>
-                    <Button onClick={confirm} disabled={name == ""} variant="contained" color="primary">
-                        Confirm
-                    </Button>
-                    <Button onClick={() => navigate("/")} variant="contained" color="secondary">
-                        Cancel
-                    </Button>
-                </div>
-            </Box>
-        </Dialog>
+        <React.Fragment>
+            <Trees/>
+            <Dialog open={true} fullWidth maxWidth={'sm'}>
+                <DialogTitle>Enter your name</DialogTitle>
+                <Box sx={{ display: "flex", alignItems: "center", padding: "10px", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
+                    <TextField variant="filled" sx={{
+                            width: "100%",
+                            "& .Mui-focused": {
+                                color: "text.primary"
+                            }
+                        }}
+                        label={"Your name"}
+                        value={name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setName(e.target.value)}
+                        onKeyDown={onKeyDown}
+                    />
+
+                    <Box sx={{ display: "flex", gap: "1rem" }}>
+                        <Button onClick={confirm} disabled={name == ""} variant="contained" color="primary">
+                            Confirm
+                        </Button>
+                        <Button onClick={() => navigate("/")} variant="contained" color="secondary">
+                            Cancel
+                        </Button>
+                    </Box>
+                </Box>
+            </Dialog>
+        </React.Fragment>
+        
     );
 }
 
