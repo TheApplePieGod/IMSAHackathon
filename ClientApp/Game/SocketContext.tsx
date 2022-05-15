@@ -8,6 +8,7 @@ import { UnspecifiedMessageType } from "../Definitions/Socket/UnspecifiedGame";
 import { Player } from "../Definitions/Socket/Player";
 import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
 import { useUnspecifiedGame } from "./UnspecifiedGame";
+import { useMathGame } from "./MathGame";
 
 export interface BaseState {
     hostRoomId: string;
@@ -15,9 +16,15 @@ export interface BaseState {
     localPlayer: Player | undefined;
 }
 
+const TEST_PLAYER_LIST: Player[] = [
+    { name: "Player1", id: "player1", isHost: true, isCurrent: true },
+    { name: "Player2", id: "player2", isHost: false, isCurrent: false },
+    { name: "Player3", id: "player3", isHost: false, isCurrent: false },
+];
+
 const DEFAULT_STATE: BaseState = {
     hostRoomId: "",
-    playerList: [],
+    playerList: TEST_PLAYER_LIST,
     localPlayer: undefined
 }
 
@@ -121,7 +128,7 @@ export const SocketContextProvider = (props: Props) => {
         [GameType.Unspecified]: useUnspecifiedGame({ sendMessage: sendMessageType, baseState, setBaseState }),
         [GameType.Scales]: {} as GameContext,
         [GameType.PaperFolding]: {} as GameContext,
-        [GameType.Math]: {} as GameContext,
+        [GameType.Math]: useMathGame({ sendMessage: sendMessageType, baseState, setBaseState }),
     };
 
     const getGame = (type: GameType) => {

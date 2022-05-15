@@ -5,7 +5,7 @@ interface Props {
 
 }
 
-const ComponentTemplate = (props: Props) => {
+export const ComponentTemplate = (props: Props) => {
     return (
         <Box>
             
