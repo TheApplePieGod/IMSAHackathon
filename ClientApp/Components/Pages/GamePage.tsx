@@ -7,8 +7,8 @@ import LobbyPage from "./LobbyPage";
 import { MathGameScreen } from "../../Game/UI/MathGameScreen";
 import { MathGameState } from "../../Game/MathGame";
 import ScaleGameScreen from "../../Game/UI/ScaleGameScreen";
-import { FoldingGameScreen } from "../../Game/UI/FoldingGameScreen";
 import { ScaleGameState } from "../../Game/ScaleGame";
+import FoldingGameScreen from "../../Game/UI/FoldingGameScreen";
 
 interface Props {
 
