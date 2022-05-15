@@ -23,14 +23,13 @@ export const AppRoutes = () => {
                     <PageWrapper>
                         <Box>
                             <Routes>
-                                <Route path={'/'} element={<GameWrapper />} />
+                                <Route path={'/'} element={<HomePage />} />
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
                                 <Route
                                     path={'play/:roomIdString/:name'}
                                     element={<SocketContextProvider><LobbyPage/></SocketContextProvider>}
                                 />
                                 <Route path={'/*'} element={<NotFoundPage />} />
-                                
                             </Routes>
                         </Box>
                     </PageWrapper>
