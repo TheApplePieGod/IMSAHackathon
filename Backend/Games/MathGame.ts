@@ -157,3 +157,7 @@ export const startGame = (lobby: Lobby) => {
 
     lobby.gameState = state;
 }
+
+export const endGame = (lobby: Lobby) => {
+    
+}

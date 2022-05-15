@@ -13,12 +13,14 @@ export interface BaseState {
     hostRoomId: string;
     playerList: Player[];
     localPlayer: Player | undefined;
+    currentGame: GameType;
 }
 
 const DEFAULT_STATE: BaseState = {
     hostRoomId: "",
     playerList: [],
-    localPlayer: undefined
+    localPlayer: undefined,
+    currentGame: GameType.Unspecified
 }
 
 export interface SocketContext {

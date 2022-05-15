@@ -9,7 +9,9 @@ export enum GenericMessageType {
     PlayerJoin,
     PlayerLeave,
     RoomCreated,
-    KickPlayer
+    KickPlayer,
+    GameStarted,
+    GameEnded
 }
 
 // The GenericHandler handles things like the lobby, etc.
