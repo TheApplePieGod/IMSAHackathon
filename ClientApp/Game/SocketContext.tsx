@@ -20,6 +20,7 @@ export interface BaseState {
     timerDuration: number;
     lobbyOpen: boolean;
     gameEnded: boolean;
+    matchEnded: boolean;
 }
 
 const TEST_PLAYER_LIST: Player[] = [
@@ -38,6 +39,7 @@ const DEFAULT_STATE: BaseState = {
     timerDuration: 0,
     lobbyOpen: true,
     gameEnded: false,
+    matchEnded: false,
 }
 
 export interface SocketContext {

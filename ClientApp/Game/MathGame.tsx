@@ -19,7 +19,8 @@ const TEST_PLAYER_STATE = {
     "player1": {
         options: ["17/8", "2", "15/6", "2.80", "3/2", "2.35", "3", "3/1.2"],
         score: 200,
-        selections: []
+        selections: [],
+        cycles: 0
     },
 };
 

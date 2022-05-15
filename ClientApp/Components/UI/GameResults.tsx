@@ -1,7 +1,8 @@
 ﻿import * as React from "react";
-import { styled, Box, Typography, Modal } from "@mui/material";
+import { styled, Box, Typography, Modal, Button } from "@mui/material";
 import { useSocketContext } from "../../Game/SocketContext";
 import { gameInfoMap } from "../../Definitions/GameInfo";
+import { useNavigate } from "react-router";
 
 interface Props {
     timeRemaining: string;
@@ -19,6 +20,20 @@ const OutlinedBox = styled("div")(
     `
 );
 
+const StyledButton = styled(Button)(
+    ({ theme }) => `
+        border: 2px solid #736F54;
+        background-color: #A2845A;
+        box-shadow: 5px 5px 6px #00000029;
+        border-radius: 20px;
+        padding: 1rem;
+        &:hover {
+            background-color: #A2845A;
+            box-shadow: 5px 5px 6px #00000029;
+        }
+    `
+);
+
 const TextBox = styled("div")(
     ({ theme }) => `
         display: flex;
@@ -28,8 +43,9 @@ const TextBox = styled("div")(
 );
 
 export const GameResults = (props: Props) => {
+    const navigate = useNavigate();
     const socketContext = useSocketContext();
-    const { lobbyOpen, gameRotation, rotationIndex, playerList } = socketContext.baseState;
+    const { lobbyOpen, gameRotation, rotationIndex, playerList, matchEnded } = socketContext.baseState;
     const currentGame = gameRotation[rotationIndex];
     
     return (
@@ -43,17 +59,25 @@ export const GameResults = (props: Props) => {
         >
             <Box sx={{ height: "80%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4rem" }}>
                 <OutlinedBox sx={{ padding: "2rem 3rem" }}>
-                    <Typography variant="h3">GAME OVER</Typography>
-                    <TextBox>
-                        <Typography variant="subtitle1">Next up:</Typography>
-                        <Typography variant="h5" sx={{ fontFamily: "'Manteiga Gorda'" }}>
-                            {gameInfoMap[gameRotation[(rotationIndex + 1) % gameRotation.length]].name}
-                        </Typography>
-                    </TextBox>
-                    <TextBox>
-                        <Typography variant="subtitle1">Starting in:</Typography>
-                        <Typography variant="h5" color="textSecondary">{props.timeRemaining}</Typography>
-                    </TextBox>
+                    <Typography variant="h3">{matchEnded ? "GAME" : "ROUND"} OVER</Typography>
+                    {matchEnded ?
+                        <StyledButton variant="contained" onClick={() => navigate("/")}>
+                            <Typography>Return Home</Typography>
+                        </StyledButton>
+                        :
+                        <React.Fragment>
+                            <TextBox>
+                                <Typography variant="subtitle1">Next up:</Typography>
+                                <Typography variant="h5" sx={{ fontFamily: "'Manteiga Gorda'" }}>
+                                    {gameInfoMap[gameRotation[(rotationIndex + 1) % gameRotation.length]].name}
+                                </Typography>
+                            </TextBox>
+                            <TextBox>
+                                <Typography variant="subtitle1">Starting in:</Typography>
+                                <Typography variant="h5" color="textSecondary">{props.timeRemaining}</Typography>
+                            </TextBox>
+                        </React.Fragment>
+                    }
                 </OutlinedBox>
                 <Box sx={{ display: "flex", gap: "4rem" }}>
                     <OutlinedBox sx={{  }}>

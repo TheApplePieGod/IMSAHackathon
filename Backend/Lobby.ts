@@ -134,13 +134,6 @@ export class Lobby {
         if (!this.gameStarted) return;
 
         this.gameStarted = false;
-
-        // Send the generic game end message to all players
-        this.getAllPlayers().forEach(p => {
-            p.sendMessage(GenericMessageType.MatchEnd, GameType.None, JSON.stringify({
-                
-            }));
-        });
     }
 
     // Ends the current game and sends results
@@ -161,27 +154,30 @@ export class Lobby {
             } break;
         }
         
+        // Whether or not the game that ended was the last game
+        const lastGame = this.currentRotation >= this.params.rotationCount;
+
         // Send the generic game end message to all players
         this.getAllPlayers().forEach(p => {
             p.sendMessage(GenericMessageType.GameEnd, GameType.None, JSON.stringify({
                 timestamp: Date.now(),
                 duration: this.params.gameDelay * 1000,
-                scores: this.getAllScores()
+                scores: this.getAllScores(),
+                lastGame
             }));
         });
 
-        // Start the countdown before the next game
-        setTimeout(this.startNextGame.bind(this), this.params.gameDelay * 1000);
+        
+        if (lastGame)
+            this.endMatch();
+        else
+            // Start the countdown before the next game
+            setTimeout(this.startNextGame.bind(this), this.params.gameDelay * 1000);
     }
 
     // Starts the next game in the rotation
     startNextGame = () => {
         if (!this.gameStarted) return;
-
-        if (this.currentRotation >= this.params.rotationCount) {
-            this.endMatch();
-            return;
-        }
 
         const game = this.gameRotation[this.rotationIndex];
         switch (game) {

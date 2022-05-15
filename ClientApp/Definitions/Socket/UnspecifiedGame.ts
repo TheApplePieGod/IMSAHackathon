@@ -8,6 +8,5 @@ export enum UnspecifiedMessageType {
     GameStart,
     GameEnd,
     ReadyState,
-    GameRotation,
-    MatchEnd
+    GameRotation
 };
