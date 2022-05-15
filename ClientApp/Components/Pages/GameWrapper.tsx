@@ -1,7 +1,8 @@
-import * as React from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { styled, Box, Divider, Typography, Button, TextField, Dialog, Paper, DialogTitle } from "@mui/material";
 import Trees from '../UI/Trees';
 import { useNavigate } from "react-router-dom";
+import HomeIcon from '@mui/icons-material/Home';
 import {Player} from "../../Definitions/Socket/Player";
 
 const OutlinedBox = styled("div")(
@@ -28,6 +29,41 @@ const StyledButton = styled(Button)(
 );
 
 const GameWrapper = () => {
+    const [startTime, setStartTime] = useState(0);
+    const [timerCounter, setTimerCounter] = useState(0);
+    const [timeText, setTimeText] = useState("9:99");
+    const duration = 90 * 1000;
+
+    const getTimeRemaining = () => {
+        const total = startTime + duration - Date.now();
+        const seconds = Math.floor((total / 1000) % 60);
+        const minutes = Math.floor((total / 1000 / 60) % 60);
+        return {
+            seconds, minutes
+        };
+    }
+
+    const updateTimer = () => {
+        const remaining = getTimeRemaining();
+        const minutes = remaining.minutes;
+        const seconds = remaining.seconds;
+        setTimeText(
+            minutes + ':'
+            + (seconds > 9 ? seconds : '0' + seconds)
+        )
+    }
+
+    const refreshTimeout = () => {  
+        const id = setTimeout(() => {
+            updateTimer();
+            setTimerCounter(timerCounter + 1);
+        }, 1000);
+    }
+
+    useEffect(() => {
+        refreshTimeout();
+    }, [timerCounter]);
+
     const playerList: Player[] = [];
     playerList.push({name: "Joe", id: "", isHost: false, isCurrent: true});
     playerList.push({name: "Biden", id: "", isHost: false, isCurrent: false});
@@ -54,14 +90,39 @@ const GameWrapper = () => {
                     <OutlinedBox sx={{
                         width: "100%",
                         height: "100%",
+                        position: "relative"
                     }}>
+                        <Typography variant="h3" sx={{
+                            padding: "10px",
+                            opacity: "0.6",
+                            position: "absolute",
+                            right: "0px",
+                            top: "0px"
+                        }}>
+                            {timeText}
+                        </Typography>
+                        <HomeIcon onClick={() => {
+                            setStartTime(Date.now());
+                            refreshTimeout();
+                        }} sx={{
+                            position: "absolute",
+                            bottom: "0px",
+                            right: "0px",
+                            fontSize: "5rem"
+                        }}/>
                     </OutlinedBox>
 
                     <Box sx={{
-                        display: "flex"
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "5px"
                     }}>
-                        <Typography>You</Typography>
-                        <Typography>0 pts</Typography>
+                        <Typography variant="h4" sx={{
+                            marginRight: "30px"
+                        }}>You</Typography>
+                        <Typography variant="h5" sx={{
+                            opacity: "0.6"
+                        }}>0 pts</Typography>
                     </Box>
                 </Box>
                 
@@ -75,12 +136,30 @@ const GameWrapper = () => {
                             return (
                                 <Box>
                                     <OutlinedBox sx={{
-                                        height: "250px",
-                                        width: "300px",
+                                        height: "200px",
+                                        width: "250px",
                                     }}>
 
                                     </OutlinedBox>
-                                    <Typography>{player.name}</Typography>
+                                    <Box sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        padding: "5px"
+                                    }}>
+                                        <Typography variant="h5" sx={{
+                                            alignSelf: "flex-start"
+                                        }}>
+                                            {player.name}
+                                        </Typography>
+                                        <Typography sx={{
+                                            marginLeft: "auto",
+                                            opacity: "0.6"
+                                        }}>
+                                            0 pts
+                                        </Typography>
+                                    </Box>
+                                    
                                 </Box>
                             )
                         })
