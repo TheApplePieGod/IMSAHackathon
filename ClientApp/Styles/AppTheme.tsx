@@ -12,7 +12,7 @@ export const createAppTheme = () => {
 				contrastText: "#454F25"
 			},
 			secondary: {
-				main: deepOrange[500],
+				main: "#736F54"
 			},
 			background: {
 				default: "#C3BA83",
