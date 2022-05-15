@@ -12,6 +12,7 @@ const NotFoundPage = React.lazy(() => import("./Components/Pages/NotFoundPage"))
 const JoinPage = React.lazy(() => import("./Components/Pages/JoinPage"));
 const GameSelectPage = React.lazy(() => import("./Components/Pages/GameSelectPage"));
 const LobbyPage = React.lazy(() => import("./Components/Pages/LobbyPage"));
+const GameWrapper = React.lazy(() => import("./Components/Pages/GameWrapper"));
 
 export const AppRoutes = () => {
     return (
@@ -22,13 +23,14 @@ export const AppRoutes = () => {
                     <PageWrapper>
                         <Box>
                             <Routes>
-                                <Route path={'/'} element={<HomePage />} />
+                                <Route path={'/'} element={<GameWrapper />} />
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
                                 <Route
                                     path={'play/:roomIdString/:name'}
                                     element={<SocketContextProvider><LobbyPage/></SocketContextProvider>}
                                 />
                                 <Route path={'/*'} element={<NotFoundPage />} />
+                                
                             </Routes>
                         </Box>
                     </PageWrapper>
