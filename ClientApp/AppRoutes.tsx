@@ -5,7 +5,6 @@ import { PageWrapper } from "./Components/UI/PageWrapper";
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { SocketContextProvider } from "./Game/SocketContext";
-import FoldingGameScreen from "./Game/UI/FoldingGameScreen";
 
 const HomePage = React.lazy(() => import("./Components/Pages/HomePage"));
 const AboutPage = React.lazy(() => import("./Components/Pages/AboutPage"));
@@ -24,7 +23,7 @@ export const AppRoutes = () => {
                     <PageWrapper>
                         <Box>
                             <Routes>
-                                <Route path={'/'} element={<FoldingGameScreen />} />
+                                <Route path={'/'} element={<HomePage />} />
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
                                 <Route
                                     path={'play/:roomIdString/:name'}
