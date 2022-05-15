@@ -145,8 +145,8 @@ const LobbyPage = (props: Props) => {
                             <StyledButton variant="contained">
                                 <Typography>Ready</Typography>
                             </StyledButton>
-                            <StyledButton variant="contained">
-                                <HomeIcon />
+                            <StyledButton sx={{ padding: "0rem 0" }} variant="contained">
+                                <HomeIcon sx={{ opacity: "0.5", fontSize: "64px" }} />
                             </StyledButton>
                             <StyledButton variant="contained">
                                 <SettingsIcon />
@@ -159,7 +159,8 @@ const LobbyPage = (props: Props) => {
                             alignItems: "center",
                             justifyContent: "left",
                             gap: "0.5rem",
-                            marginTop: "1rem"
+                            marginTop: "1rem",
+                            color: "#A2845A"
                         }}
                     >
                         <Typography variant="h4">Room Code:</Typography>
