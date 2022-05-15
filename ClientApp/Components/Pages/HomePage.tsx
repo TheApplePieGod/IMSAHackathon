@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { Box, Divider, Typography, Button, TextField } from "@mui/material";
+import { Box, Divider, Typography, Button, TextField, Dialog, DialogTitle } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 
@@ -8,27 +8,28 @@ const HomePage = () => {
 
     const navigate = useNavigate();
 
-    const [roomId, setRoomId] = React.useState(0);
-
-    const [showNameDialog, setShowNameDialog] = React.useState(false);
+    const [name, setName] = React.useState("");
+    const [roomId, setRoomId] = React.useState("");
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [nameError, setNameError] = React.useState(false);
 
     const newRoom = () => {
-        navigate("/join/new");
-    }
-
-    const updateRoomId = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (e.target.value == "") {
-            setRoomId(0);
-            return;
-        }
-
-        const parsed = parseInt(e.target.value);
-        if (!isNaN(parsed))
-            setRoomId(parsed);
+        if(name === "") setNameError(true);
+        else navigate(`/play/0/${name}`);
     }
 
     const joinRoom = () => {
-        navigate(`/join/${roomId}`);
+        navigate(`/play/${roomId}/${name}`);
+    }
+
+    const openIdDialog = () => {
+        if(name === "") setNameError(true);
+        else setDialogOpen(true);
+    }
+
+    const updateName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if(e.target.value !== "") setNameError(false);
+        setName(e.target.value);
     }
 
     return (
@@ -75,9 +76,7 @@ const HomePage = () => {
                     width: "600px",
                     height: "200px",
                     backgroundSize: "100%"
-                }}>
-
-                </Box>
+                }}/>
                 
                 <Box sx={{
                     flexDirection: "column",
@@ -88,9 +87,11 @@ const HomePage = () => {
                     <TextField variant="filled" sx={{
                         width: "100%"
                     }}
+                        error={nameError}
+                        helperText={nameError ? "Please enter a name" : ""}
                         label={"Your Nickname"}
-                        value={roomId == 0 ? "" : roomId}
-                        onChange={updateRoomId}
+                        value={name}
+                        onChange={updateName}
                     />
                     <Box sx={{
                         display: "flex",
@@ -100,14 +101,34 @@ const HomePage = () => {
                             flexGrow: "1",
                             margin: "1rem",
                             border: "3px solid #736F54"
-                        }} onClick={joinRoom} variant="contained">Join Room</Button>
+                        }} onClick={openIdDialog} variant="contained">Join Room</Button>
                         <Button sx={{
                             flexGrow: "1",
                             margin: "1rem",
                             border: "3px solid #736F54"
-                        }}onClick={newRoom} variant="contained">Create Room</Button>
+                        }} onClick={newRoom} variant="contained">Create Room</Button>
                     </Box>
                 </Box>
+                <Dialog open={dialogOpen} fullWidth maxWidth={'sm'}>
+                    <DialogTitle>Join a room</DialogTitle>
+                    <Box sx={{ display: "flex", alignItems: "center", padding: "10px", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
+                        <TextField variant="filled" sx={{
+                            width: "100%",
+                        }}
+                            label={"Room Code"}
+                            value={roomId}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {setRoomId(e.target.value)}}
+                        />
+                        <Box sx={{ display: "flex", gap: "1rem" }}>
+                            <Button onClick={(joinRoom)} disabled={roomId == ""} variant="contained" color="primary">
+                                Join
+                            </Button>
+                            <Button onClick={() => setDialogOpen(false)} variant="contained" color="secondary">
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Box>
+                </Dialog>
             </Box>
         </React.Fragment>
     );

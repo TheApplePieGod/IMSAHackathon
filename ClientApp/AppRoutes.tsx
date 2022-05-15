@@ -25,9 +25,8 @@ export const AppRoutes = () => {
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
                                 <Route
                                     path={'play/:roomIdString/:name'}
-                                    element={<SocketContextProvider><GameSelectPage /></SocketContextProvider>}
+                                    element={<SocketContextProvider><GameSelectPage/></SocketContextProvider>}
                                 />
-
                                 <Route path={'/*'} element={<NotFoundPage />} />
                             </Routes>
                         </Box>
