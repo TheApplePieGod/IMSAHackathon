@@ -6,6 +6,7 @@ import { GameType } from "./GameType";
 enum MathMessageType {
     None = 0,
     GameStarted,
+    GameEnded,
     SubmitSelection,
     NewOptions,
 }
@@ -20,6 +21,7 @@ interface PlayerState {
     options: NumberOption[]; // Options the player is currently choosing from
     points: number; // Player's current point count
     cycles: number; // Amount of times the player has submitted choices
+    selections: number[];
 };
 
 // Define the state for this game
@@ -32,7 +34,14 @@ interface MathGameState {
 const DEFAULT_STATE: MathGameState = {
     players: {},
     maxChoices: 3,
-    optionCount: 10
+    optionCount: 15
+}
+
+// Results sent to the client when the game is finished
+interface GameResults {
+    player: string;
+    points: number;
+    cycles: number;
 }
 
 // Generate a random number that is either an integer or a decimal
@@ -89,6 +98,13 @@ const generateOptions = (count: number, maxChoices: number) => {
     return options;
 }
 
+// Return the text part of options
+const getOptionStrings = (options: NumberOption[]) => {
+    const strings: string[] = [];
+    options.forEach(o => strings.push(o.text));
+    return strings;
+}
+
 // The MathGame handler handles messages relating to the MathGame
 export const handleMessage = (lobby: Lobby, player: Player, messageType: MathMessageType, data: string) => {
     const state = lobby.gameState as MathGameState;
@@ -100,31 +116,51 @@ export const handleMessage = (lobby: Lobby, player: Player, messageType: MathMes
             if (!state.players.hasOwnProperty(player.id)) break;
             const playerState = state.players[player.id];
 
-            // Data should contain an array of indexes pointing to the player's selection
-            const selections: number[] = JSON.parse(data);
+            // Data should contain an index pointing to the player's selection
+            const selectionIndex = Number(data);
 
-            // Verify submission length matches choices
-            if (selections.length != state.maxChoices) break;
+            // Verify selection
+            if (playerState.selections.length == state.maxChoices ||
+                selectionIndex >= playerState.options.length ||
+                playerState.selections.find(s => s == selectionIndex))
+                break;
 
-            // Add points for each selection
-            selections.forEach(index => {
-                if (index >= playerState.options.length) return;
-                const selection = playerState.options[index];
-                playerState.points += selection.value * 100; // Scale by 100 to prevent decimal points
+            // Add points for selection
+            const selection = playerState.options[selectionIndex];
+            playerState.points += Math.round(selection.value * 100); // Scale by 100 to prevent decimals
+            playerState.selections.push(selectionIndex);
+
+            // Send updated points to each player
+            lobby.getAllPlayers().forEach(p => {
+                p.sendMessage(MathMessageType.SubmitSelection, GameType.Math, JSON.stringify({
+                    player: player.id,
+                    selection: selectionIndex,
+                    points: playerState.points
+                }));
             });
+        } break;
+        case MathMessageType.NewOptions: {
+            // Ensure player has a state value
+            if (!state.players.hasOwnProperty(player.id)) break;
+            const playerState = state.players[player.id];
+
+            // Verify player has used all selections
+            if (playerState.selections.length != state.maxChoices) break;
 
             playerState.cycles++;
             playerState.options = generateOptions(state.optionCount, state.maxChoices);
+            playerState.selections = [];
 
             // Send new options to all players
             lobby.getAllPlayers().forEach(p => {
                 p.sendMessage(MathMessageType.NewOptions, GameType.Math, JSON.stringify({
                     player: player.id,
-                    options: playerState.options,
-                    points: playerState.points
+                    options: getOptionStrings(playerState.options),
+                    points: playerState.points,
+                    cycles: playerState.cycles
                 }));
             })
-        }
+        } break;
     }
 }
 
@@ -135,21 +171,22 @@ export const startGame = (lobby: Lobby) => {
         const playerState: PlayerState = {
             options: generateOptions(state.optionCount, state.maxChoices),
             points: 0,
-            cycles: 1
+            cycles: 1,
+            selections: []
         };
 
         // Send this player's options to all players
         lobby.getAllPlayers().forEach(p2 => {
             p2.sendMessage(MathMessageType.NewOptions, GameType.Math, JSON.stringify({
                 player: p.id,
-                options: playerState.options,
+                options: getOptionStrings(playerState.options),
                 points: 0
             }));
         });
         
         // Send this player the gamestarted message
         p.sendMessage(MathMessageType.GameStarted, GameType.Math, JSON.stringify({
-            
+            maxChoices: state.maxChoices
         }));
 
         state.players[p.id] = playerState;
@@ -159,5 +196,26 @@ export const startGame = (lobby: Lobby) => {
 }
 
 export const endGame = (lobby: Lobby) => {
-    
+    const state = lobby.gameState as MathGameState;
+
+    const results: GameResults[] = [];
+    lobby.getAllPlayers().forEach(p => {
+        // Ensure player has a state value
+        if (!state.players.hasOwnProperty(p.id)) return;
+        const playerState = state.players[p.id];
+
+        // Add this game's points to the player's total score
+        p.score += playerState.points;
+
+        results.push({
+            player: p.id,
+            points: playerState.points,
+            cycles: playerState.cycles
+        });
+    });
+
+    // Send results to all players
+    lobby.getAllPlayers().forEach(p => {
+        p.sendMessage(MathMessageType.GameEnded, GameType.Math, JSON.stringify(results));
+    });
 }

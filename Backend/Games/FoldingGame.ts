@@ -79,7 +79,7 @@ const generateInstructions = () => {
         intInstructions = intInstructions.filter((value) => {
             if (instructionSet[value][0] == 2) { // Filter (a)
                 if (instructionSet[instruction][1] != 0 && instructionSet[value][1] != 0) return false;
-                if (instructionSet[instruction][2] != 0 && instructionSet[value][2] != 0) return false;    
+                if (instructionSet[instruction][2] != 0 && instructionSet[value][2] != 0) return false;
             } else { // Filter (b)
                 if (instructions.length > 0) {
                     if (instructionSet[instructions[0]][0] == 2) { // Only the first instruction being a half-fold can cause problems

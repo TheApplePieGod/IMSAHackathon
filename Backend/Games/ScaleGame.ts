@@ -1,13 +1,15 @@
 import { Lobby } from "../Lobby";
 import { Player } from "../Player";
 import { shuffle } from "../Util";
+import { GameType } from "./GameType";
 
 // Define message types for this handler
 enum ScaleMessageType {
     None = 0,
     GameStarted,
-    SubmitSelection,
-    NewOptions,
+    GameEnded,
+    SubmitAnswer,
+    NewScales,
 }
 
 interface Animal {
@@ -22,7 +24,11 @@ interface Scale {
 
 // Individual player state for this game
 interface PlayerState {
-    answer: boolean; // Left: false, right: true    
+    answer: boolean; // Left: false, right: true
+    answered: boolean;
+    weight: number;
+    score: number;
+    cycles: number;
 };
 
 // Define the state for this game
@@ -32,6 +38,13 @@ interface ScaleGameState {
 
 const DEFAULT_STATE: ScaleGameState = {
     players: {},
+}
+
+// Results sent to the client when the game is finished
+interface GameResults {
+    player: string;
+    points: number;
+    cycles: number;
 }
 
 const animalList: Record<string, number[]> = {
@@ -44,7 +57,7 @@ const animalList: Record<string, number[]> = {
     "elephant": [30, 40]
 };
 
-const generateSolution = () => {
+const generateScales = () => {
     const equalityCount = 2; // number of equality scales
 
     // Populate exactly equalityCount * 2 animals to use for this set of scales
@@ -113,7 +126,7 @@ const generateSolution = () => {
 
         equalityScales.push(scale);
 
-        console.log(`Remaining weight: ${weight}`, JSON.stringify(scale));
+        // console.log(`Remaining weight: ${weight}`, JSON.stringify(scale));
     }
 
     // Add back the removed animals so we can pick from them for the unknown scale
@@ -145,22 +158,67 @@ const generateSolution = () => {
         rightSide: rightSide.side
     }
 
-    console.log(`Unknown: ${JSON.stringify(unknownScale)}`);
-    console.log(`Answer: ${answer}`);
+    // console.log(`Unknown: ${JSON.stringify(unknownScale)}`);
+    // console.log(`Answer: ${answer}`);
 
     return {
         equalityScales,
         unknownScale,
-        answer
+        answer,
+        weight: answer ? rightSide.weight : leftSide.weight
     };
 }
 
 // The ScaleGame handler handles messages relating to the ScaleGame
 export const handleMessage = (lobby: Lobby, player: Player, messageType: ScaleMessageType, data: string) => {
+    const state = lobby.gameState as ScaleGameState;
+
     switch (messageType) {
         default: break;
-        case ScaleMessageType.GameStarted: {
-            generateSolution();
+        case ScaleMessageType.SubmitAnswer: {
+            // Ensure player has a state value
+            if (!state.players.hasOwnProperty(player.id)) break;
+            const playerState = state.players[player.id];
+
+            if (playerState.answered) break;
+
+            const parsed = JSON.parse(data);
+
+            if (parsed.answer == playerState.answer) {
+                playerState.score += Math.floor(playerState.weight * 10);
+            }
+
+            playerState.answered = true;
+
+            // Send answer
+            lobby.getAllPlayers().forEach(p => {
+                p.sendMessage(ScaleMessageType.SubmitAnswer, GameType.Scales, JSON.stringify({
+                    player: player.id,
+                    correct: parsed.answer == playerState.answer
+                }));
+            });
+        } break;
+        case ScaleMessageType.NewScales: {
+            // Ensure player has a state value
+            if (!state.players.hasOwnProperty(player.id)) break;
+            const playerState = state.players[player.id];
+
+            const scales = generateScales();
+            playerState.weight = scales.weight;
+            playerState.answer = scales.answer;
+            playerState.answered = false;
+            playerState.cycles++;
+
+            // Send new scales to all players
+            lobby.getAllPlayers().forEach(p => {
+                p.sendMessage(ScaleMessageType.NewScales, GameType.Scales, JSON.stringify({
+                    player: player.id,
+                    equalityScales: scales.equalityScales,
+                    unknownScale: scales.unknownScale,
+                    score: playerState.score,
+                    cycles: playerState.cycles
+                }));
+            });
         } break;
     }
 }
@@ -169,20 +227,26 @@ export const startGame = (lobby: Lobby) => {
     const state = DEFAULT_STATE;
 
     lobby.getAllPlayers().forEach(p => {
+        const scales = generateScales();
+
         const playerState: PlayerState = {
-            answer: false
+            answer: scales.answer,
+            answered: false,
+            weight: scales.weight,
+            score: 0,
+            cycles: 0
         };
 
-        const solution = generateSolution();
-
-        // // Send this player's options to all players
-        // lobby.getAllPlayers().forEach(p2 => {
-        //     p2.sendMessage(MathMessageType.NewOptions, GameType.Math, JSON.stringify({
-        //         player: p.id,
-        //         options: playerState.options,
-        //         points: 0
-        //     }));
-        // });
+        // Send this player's scales to all players
+        lobby.getAllPlayers().forEach(p2 => {
+            p2.sendMessage(ScaleMessageType.NewScales, GameType.Scales, JSON.stringify({
+                player: p.id,
+                equalityScales: scales.equalityScales,
+                unknownScale: scales.unknownScale,
+                score: 0,
+                cycles: 0
+            }));
+        });
         
         // // Send this player the gamestarted message
         // p.sendMessage(MathMessageType.GameStarted, GameType.Math, JSON.stringify({
@@ -196,5 +260,26 @@ export const startGame = (lobby: Lobby) => {
 }
 
 export const endGame = (lobby: Lobby) => {
+    const state = lobby.gameState as ScaleGameState;
 
+    const results: GameResults[] = [];
+    lobby.getAllPlayers().forEach(p => {
+        // Ensure player has a state value
+        if (!state.players.hasOwnProperty(p.id)) return;
+        const playerState = state.players[p.id];
+
+        // Add this game's score to the player's total score
+        p.score += playerState.score;
+
+        results.push({
+            player: p.id,
+            points: playerState.score,
+            cycles: playerState.cycles
+        });
+    });
+
+    // Send results to all players
+    lobby.getAllPlayers().forEach(p => {
+        p.sendMessage(ScaleMessageType.GameEnded, GameType.Scales, JSON.stringify(results));
+    });
 }

@@ -9,6 +9,7 @@ import { Player } from "../Definitions/Socket/Player";
 import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
 import { useUnspecifiedGame } from "./UnspecifiedGame";
 import { useMathGame } from "./MathGame";
+import { useScaleGame } from "./ScaleGame";
 
 export interface BaseState {
     hostRoomId: string;
@@ -18,12 +19,15 @@ export interface BaseState {
     gameRotation: GameType[];
     timerTimestamp: number;
     timerDuration: number;
+    lobbyOpen: boolean;
+    gameEnded: boolean;
+    matchEnded: boolean;
 }
 
 const TEST_PLAYER_LIST: Player[] = [
-    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false },
-    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true },
-    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false },
+    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false, score: 100 },
+    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true, score: 100 },
+    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false, score: 100 },
 ];
 
 const DEFAULT_STATE: BaseState = {
@@ -33,7 +37,10 @@ const DEFAULT_STATE: BaseState = {
     rotationIndex: 0,
     gameRotation: [ GameType.Unspecified ],
     timerTimestamp: 0,
-    timerDuration: 0
+    timerDuration: 0,
+    lobbyOpen: true,
+    gameEnded: false,
+    matchEnded: false,
 }
 
 export interface SocketContext {
@@ -134,7 +141,7 @@ export const SocketContextProvider = (props: Props) => {
 
     const games: Record<GameType, GameContext> = {
         [GameType.Unspecified]: useUnspecifiedGame({ sendMessage: sendMessageType, baseState, setBaseState }),
-        [GameType.Scales]: {} as GameContext,
+        [GameType.Scales]: useScaleGame({ sendMessage: sendMessageType, baseState, setBaseState }),
         [GameType.PaperFolding]: {} as GameContext,
         [GameType.Math]: useMathGame({ sendMessage: sendMessageType, baseState, setBaseState }),
     };
