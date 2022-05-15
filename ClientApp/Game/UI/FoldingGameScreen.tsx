@@ -5,6 +5,7 @@ import { GameType } from "../../Definitions/Socket/GameType";
 import { FoldingGameState } from "../FoldingGame";
 import { instructionSet } from "../../Definitions/Socket/FoldingGame";
 import { Canvas } from "../../Components/UI/Canvas";
+import FoldingGameInput from "./FoldingGameInput";
 
 interface Props {
     player: string;
@@ -77,7 +78,7 @@ const FoldingGameScreen = () => {
                     width: "80%",
                     height: "50%",
                 }}>
-
+                    <FoldingGameInput/>
                 </Box>
             </Box>
         </Box>
