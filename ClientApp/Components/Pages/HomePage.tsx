@@ -31,9 +31,23 @@ const HomePage = () => {
         setName(e.target.value);
     }
 
+    React.useEffect(() => {
+        const foundName = localStorage.getItem("playerName");
+        if (foundName)
+            setName(foundName);
+    }, [])
+
     return (
         <React.Fragment>
-            <Trees/>
+            <Box sx={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                visibility: {xs: "hidden", sm: "hidden", lg: "visible"}
+            }}>
+                <Trees />
+            </Box>
+            
             <Box
                 sx={{
                     width: "100%",
@@ -89,9 +103,6 @@ const HomePage = () => {
                     <Box sx={{ display: "flex", alignItems: "center", padding: "10px", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
                         <TextField variant="filled" sx={{
                                 width: "100%",
-                                "&. Mui-focused": {
-                                    color: "#FF0000"
-                                }
                             }}
                             label={"Room Code"}
                             value={roomId}
