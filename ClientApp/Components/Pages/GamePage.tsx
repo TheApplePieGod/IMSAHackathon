@@ -67,7 +67,7 @@ const GamePage = (props: Props) => {
 
     return (
         <Box>
-            {socketContext.baseState.lobbyOpen ?
+            {lobbyOpen ?
                 <LobbyPage />
                 :
                 <GameWrapper render={renderGame} getPoints={getPoints} getResult={getResult} />
