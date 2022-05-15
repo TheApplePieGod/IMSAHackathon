@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
-import { styled, Box, Divider, Typography, Button } from "@mui/material";
+import { styled, Box, Divider, Typography, Button, IconButton } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Player } from "../../Definitions/Socket/Player";
 import { useSocketContext } from "../../Game/SocketContext";
@@ -93,7 +93,8 @@ const GameWrapper = (props: Props) => {
                         <OutlinedBox sx={{
                             width: "100%",
                             height: "100%",
-                            position: "relative"
+                            position: "relative",
+                            zIndex: 5
                         }}>
                             <Typography variant="h3" sx={{
                                 padding: "10px",
@@ -104,14 +105,18 @@ const GameWrapper = (props: Props) => {
                             }}>
                                 {timeText}
                             </Typography>
-                            <HomeIcon onClick={() => {
-                                navigate("/");
-                            }} sx={{
-                                position: "absolute",
-                                bottom: "0px",
-                                right: "0px",
-                                fontSize: "5rem"
-                            }}/>
+                            <IconButton
+                                onClick={() => navigate("/")}
+                                sx={{
+                                    position: "absolute",
+                                    bottom: "0px",
+                                    right: "0px",
+                                    fontSize: "5rem",
+                                    zIndex: 5
+                                }}
+                            >
+                                <HomeIcon sx={{ fontSize: 60 }} />
+                            </IconButton>
                             {localPlayer && props.render(localPlayer.id)}
                         </OutlinedBox>
 

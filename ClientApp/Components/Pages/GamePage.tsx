@@ -6,6 +6,9 @@ import GameWrapper from "./GameWrapper";
 import LobbyPage from "./LobbyPage";
 import { MathGameScreen } from "../../Game/UI/MathGameScreen";
 import { MathGameState } from "../../Game/MathGame";
+import ScaleGameScreen from "../../Game/UI/ScaleGameScreen";
+import { FoldingGameScreen } from "../../Game/UI/FoldingGameScreen";
+import { ScaleGameState } from "../../Game/ScaleGame";
 
 interface Props {
 
@@ -20,6 +23,8 @@ const GamePage = (props: Props) => {
         switch (currentGame) {
             default: return <></>
             case GameType.Math: return <MathGameScreen player={player} />
+            case GameType.Scales: return <ScaleGameScreen player={player} />
+            case GameType.PaperFolding: return <FoldingGameScreen player={player} />
         }
     }
 
@@ -30,6 +35,10 @@ const GamePage = (props: Props) => {
             case GameType.Math: {
                 if (!(gameState as MathGameState).players.hasOwnProperty(player)) break;
                 return (gameState as MathGameState).players[player].score;
+            }
+            case GameType.Scales: {
+                if (!(gameState as ScaleGameState).players.hasOwnProperty(player)) break;
+                return (gameState as ScaleGameState).players[player].score;
             }
         }
         return 0;
