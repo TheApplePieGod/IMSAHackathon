@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Paper, useTheme, IconButton } from "@mui/material";
+import { Box, Paper, useTheme, IconButton, Button, styled } from "@mui/material";
 import { GameType } from "../../Definitions/Socket/GameType";
 import {Animal, Scale} from "../../Definitions/Socket/ScaleGame";
 import { useLocation, useNavigate } from "react-router";
@@ -18,16 +18,34 @@ enum ImageAlign {
     END
 }
 
-const CANVAS_SIZE = 500;
+const imageSizes: any = {
+    bird: [50, 50],
+    bug: [80, 50],
+    elephant: [80, 80],
+    jaguar: [80, 50],
+    lion: [80, 50],
+    monkey: [50, 80],
+}
+
+const CANVAS_SIZE = 750;
 const CANVAS_MARGIN = 50;
+
+const StyledButton = styled(Button)(
+    ({ theme }) => `
+        border: 2px solid #736F54;
+        background-color: #A2845A;
+        box-shadow: 5px 5px 6px #00000029;
+        border-radius: 10px;
+        &:hover {
+            background-color: #A2845A;
+            box-shadow: 5px 5px 6px #00000029;
+        }
+    `
+);
 
 const ScaleGameScreen = () => {
 
-    const imageSizes: any = {
-        bird: [50, 50],
-        bug: [80, 50],
-        elephant: [80, 80]
-    }
+    const theme = useTheme();
 
     // const socketContext = useSocketContext();
     // const baseState = socketContext.baseState;
@@ -35,8 +53,8 @@ const ScaleGameScreen = () => {
     // const gameState = gameContext.state as ScaleGameState;
     // const {player} = props;
 
+    //Example player and gameState
     const player = "joe";
-
     const gameState: ScaleGameState = {
         players: {
             "joe": {
@@ -135,13 +153,35 @@ const ScaleGameScreen = () => {
         ctx.drawImage(image, finalX, finalY, width, height);
     }
 
+    const drawAnimals = (ctx: CanvasRenderingContext2D, sideType: boolean, side: Animal[], baseline: number) => {
+        let offset = sideType ? CANVAS_SIZE - CANVAS_MARGIN : CANVAS_MARGIN;
+        for(let j = 0; j < side.length; j++){
+            const image = new Image();
+            image.src = `/images/${side[j].name}.png`;
+            let imageBounds = imageSizes[side[j].name];
+            drawImage(false, ctx, image, sideType ? ImageAlign.END : ImageAlign.START, ImageAlign.END, offset, baseline, imageBounds[0], imageBounds[1]);
+
+            ctx.font = `30px ${theme.typography.fontFamily}`;
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText(side[j].count.toString(), offset + imageBounds[0] / 2 * (sideType ? -1 : 1), baseline - 20);
+
+            ctx.font = `30px ${theme.typography.fontFamily}`;
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1;
+            ctx.strokeText(side[j].count.toString(), offset + imageBounds[0] / 2 * (sideType ? -1 : 1), baseline - 20);
+
+            offset += (sideType ? -1 : 1) * (imageBounds[0] + 20);
+        }
+    }
+
     const draw = (ctx: CanvasRenderingContext2D, frameCount: number) => {
         if (!gameState.players.hasOwnProperty(player)) return;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        for (let i = 0; i < gameState.players[player].scales.length; i++) {
-            
-            const scaleBaseline = (ctx.canvas.height - 100) / 3 * (i + 1);
+        let scales = gameState.players[player].scales;
+        for (let i = 0; i < scales.length; i++) {
+            const scaleBaseline = ((ctx.canvas.height) / 5) * (i == scales.length - 1 ? 4 : i + 1);
 
             ctx.beginPath();
             ctx.fillStyle = "red";
@@ -157,53 +197,38 @@ const ScaleGameScreen = () => {
             ctx.lineTo(CANVAS_SIZE - CANVAS_MARGIN, scaleBaseline);
             ctx.stroke();
 
-            let offset = CANVAS_MARGIN;
-            let leftSide = gameState.players[player].scales[i].leftSide;
-            for(let j = 0; j < leftSide.length; j++){
-                const image = new Image();
-                image.src = `/images/${leftSide[j].name}.png`;
-                let imageBounds = imageSizes[leftSide[j].name];
-                drawImage(false,ctx, image, ImageAlign.START, ImageAlign.END, offset, scaleBaseline, imageBounds[0], imageBounds[1]);
-
-                ctx.font = "30px Comic Sans MS";
-                ctx.fillStyle = "white";
-                ctx.textAlign = "center";
-                ctx.fillText(leftSide[j].count.toString(), offset + imageBounds[0] / 2, scaleBaseline - 20);
-
-                ctx.font = "30px Comic Sans MS";
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = 1;
-                ctx.strokeText(leftSide[j].count.toString(), offset + imageBounds[0] / 2, scaleBaseline - 20);
-
-                offset += imageBounds[0] + 20;
-            }
-
-            offset = CANVAS_SIZE - CANVAS_MARGIN;
-            let rightSide = gameState.players[player].scales[i].rightSide;
-            for(let j = 0; j < rightSide.length; j++){
-                const image = new Image();
-                image.src = `/images/${rightSide[j].name}.png`;
-                let imageBounds = imageSizes[rightSide[j].name];
-                drawImage(false, ctx, image, ImageAlign.END, ImageAlign.END, offset, scaleBaseline, imageBounds[0], imageBounds[1]);
-
-                ctx.font = "30px Comic Sans MS";
-                ctx.fillStyle = "white";
-                ctx.textAlign = "center";
-                ctx.fillText(rightSide[j].count.toString(), offset - imageBounds[0] / 2, scaleBaseline - 20);
-
-                ctx.font = "30px Comic Sans MS";
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = 1;
-                ctx.strokeText(rightSide[j].count.toString(), offset - imageBounds[0] / 2, scaleBaseline - 20);
-
-                offset -= imageBounds[0] + 20;
-            }
+            drawAnimals(ctx, false, gameState.players[player].scales[i].leftSide, scaleBaseline);
+            drawAnimals(ctx, true, gameState.players[player].scales[i].rightSide, scaleBaseline);
         }
     }
 
     return (
-        <Box sx={{ width: 500, height: 500, border: "2px solid black" }}>
+        <Box sx={{ position: "relative", width: CANVAS_SIZE, height: CANVAS_SIZE, border: "2px solid black" }}>
             <Canvas draw={draw} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+            <Box sx={{
+                display: "flex",
+                gap: "1rem",
+                position: "absolute",
+                bottom: "0px",
+                left: "50%",
+                transform: "translateX(-50%)"
+            }}>
+                <StyledButton variant="contained" sx={{
+                    zIndex: "10",
+                    left: "5px",
+                    bottom: "5px"
+                }}>
+                    Left
+                </StyledButton>
+
+                <StyledButton variant="contained" sx={{
+                    zIndex: "10",
+                    right: "5px",
+                    bottom: "5px"
+                }}>
+                    Right
+                </StyledButton>
+            </Box>
         </Box>
     );
 }
