@@ -92,8 +92,8 @@ const LobbyPage = (props: Props) => {
                         image={gameInfoMap[previewGame].previewURL}
                         steps={gameRotation.length}
                         currentStep={previewIndex}
-                        next={() => setPreviewIndex(previewIndex + 1)}
-                        back={() => setPreviewIndex(previewIndex - 1)}
+                        next={() => setPreviewIndex((previewIndex + 1) % gameRotation.length)}
+                        back={() => setPreviewIndex((previewIndex + gameRotation.length - 1) % gameRotation.length)}
                     />
                     <Typography variant="h4" sx={{ fontFamily: "'Manteiga Gorda'", textAlign: "center" }}>
                         {gameInfoMap[previewGame].name}
