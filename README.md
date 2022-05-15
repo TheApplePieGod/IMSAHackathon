@@ -15,5 +15,5 @@
 2. Run `npm run server`
 
 ## Focus Points
-1. `Backend folder` contains all of the server code
+1. `Backend` contains all of the server code
 2. `Backend/Games` contains all of the server-side game logic
