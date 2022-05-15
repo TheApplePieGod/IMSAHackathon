@@ -186,7 +186,7 @@ export const startGame = (lobby: Lobby) => {
         
         // Send this player the gamestarted message
         p.sendMessage(MathMessageType.GameStarted, GameType.Math, JSON.stringify({
-            
+            maxChoices: state.maxChoices
         }));
 
         state.players[p.id] = playerState;

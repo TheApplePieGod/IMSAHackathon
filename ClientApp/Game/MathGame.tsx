@@ -13,6 +13,7 @@ interface PlayerState {
 export interface MathGameState {
     players: Record<string, PlayerState>;
     results: MathGameResults[];
+    maxChoices: number;
 }
 
 const TEST_PLAYER_STATE = {
@@ -26,7 +27,8 @@ const TEST_PLAYER_STATE = {
 
 const DEFAULT_STATE: MathGameState = {
     players: TEST_PLAYER_STATE,
-    results: []
+    results: [],
+    maxChoices: 0
 };
 
 interface Props {
@@ -43,7 +45,13 @@ export const useMathGame = (props: Props) => {
             default:
             { } break;
             case MathMessageType.GameStarted: {
-                
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    return {
+                        ...p,
+                        maxChoices: parsed.maxChoices
+                    };
+                });
             } break;
             case MathMessageType.GameEnded: {
                 const parsed = JSON.parse(data);
@@ -72,7 +80,6 @@ export const useMathGame = (props: Props) => {
             } break;
             case MathMessageType.SubmitSelection: {
                 const parsed = JSON.parse(data);
-                console.log(parsed)
                 setState(p => {
                     p.players[parsed.player] = {
                         ...p.players[parsed.player],
