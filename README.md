@@ -18,5 +18,5 @@
 1. `Backend` contains all of the server code
 2. `Backend/Games` contains all of the server-side game logic
 3. `ClientApp/Components` contains most UI components and pages
-4. `ClientApp/Game` contains the game rendering components
+4. `ClientApp/Game` contains the game rendering components and contexts
 5. `ClientApp/Game/SocketContext` contains logic for connecting the web socket
