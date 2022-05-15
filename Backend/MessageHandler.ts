@@ -14,6 +14,10 @@ export const handleMessage = (lobby: Lobby, player: Player, message: ws.RawData)
         const gameType = jsn.gameType;
         const data = jsn.data;
 
+        // Do not allow messages unless it is the currently selected game
+        // or None
+        if (lobby.gameRotation[lobby.rotationIndex] != gameType && gameType != GameType.None) return;
+
         // Handoff the message to the related game type
         switch (gameType) {
             default: {
