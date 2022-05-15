@@ -5,7 +5,6 @@ import { useParams } from "react-router";
 import { useSocketContext } from "../../Game/SocketContext";
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 
-
 const GameSelectPage = () => {
     const socketContext = useSocketContext();
     const { localPlayer, playerList } = socketContext.baseState;

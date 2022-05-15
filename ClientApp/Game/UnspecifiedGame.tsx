@@ -33,6 +33,29 @@ export const useUnspecifiedGame = (props: Props) => {
                     };
                 })
             } break;
+            case UnspecifiedMessageType.GameRotation: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    return {
+                        ...p,
+                        gameRotation: parsed
+                    };
+                })
+            } break;
+            case UnspecifiedMessageType.ReadyState: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    const player = p.playerList.find(e => e.id == parsed.player);
+                    if (player) {
+                        player.ready = parsed.ready;
+                    }
+
+                    return {
+                        ...p,
+                        playerList: [ ...p.playerList ]
+                    };
+                })
+            } break;
             case UnspecifiedMessageType.PlayerJoin: {
                 const parsed: Player = JSON.parse(data);
                 props.setBaseState((p) => {

@@ -23,7 +23,22 @@ export const createAppTheme = () => {
 			}
 		},
 		typography: {
-			fontFamily: "'League Spartan', sans-serif"
+			fontFamily: "'Bahnschrift', sans-serif",
+			h1: {
+				fontSize: '50px',
+			},
+			h4: {
+				fontSize: '40px',
+			},
+			h5: {
+				fontSize: '30px',
+			},
+			body1: {
+				fontSize: '20px',
+			},
+			button: {
+				lineHeight: "2rem"
+			}
 		},
 		components: {
 			MuiCssBaseline: {

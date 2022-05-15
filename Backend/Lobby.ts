@@ -1,15 +1,54 @@
+import { GameType } from "./Games/GameType";
 import { Player } from "./Player";
+import { shuffle } from "./Util";
+import { startGame as startScaleGame, endGame as endScaleGame } from "./Games/ScaleGame";
+import { startGame as startMathGame, endGame as endMathGame } from "./Games/MathGame";
+import { GenericMessageType } from "./GenericHandler";
+
+export interface LobbyParams {
+    gameLength: number; // seconds
+    gameDelay: number; // seconds
+    rotationCount: number;
+}
 
 export class Lobby {
     id: string;
     host: Player;
     clients: Player[];
+    gameStarted: boolean;
     gameState: any;
+    gameRotation: GameType[];
+    rotationIndex: number;
+    currentRotation: number;
+    params: LobbyParams;
 
     constructor(id: string, host: Player) {
         this.id = id;
         this.host = host;
         this.clients = [];
+        this.gameStarted = false;
+        this.gameState = {};
+        this.gameRotation = [];
+        this.rotationIndex = 0;
+        this.currentRotation = 0;
+        this.params = {
+            gameLength: 30,
+            gameDelay: 10,
+            rotationCount: 1
+        };
+
+        this.updateGameRotation();
+    }
+
+    // Updates the game rotation with three random games
+    updateGameRotation = () => {
+        this.gameRotation = [];
+        Object.getOwnPropertyNames(GameType).forEach(p => {
+            const num = Number(p);
+            if (!isNaN(num) && num > 0) // Exclude 'None' game
+                this.gameRotation.push(num)
+        });
+        shuffle(this.gameRotation);
     }
 
     // Returns a list of all players including the host
@@ -60,6 +99,87 @@ export class Lobby {
         for (let i = 0; i < this.clients.length; i++) {
             this.clients[i].disconnect("Host has left the game lobby");
         }
+    }
+
+    // Start the match
+    startMatch = () => {
+        if (this.gameStarted) return;
+
+        this.gameStarted = true;
+        this.rotationIndex = 0;
+        this.currentRotation = 0;
+
+        this.startNextGame();
+    }
+
+    endGame = () => {
+        if (!this.gameStarted) return;
+
+        const game = this.gameRotation[this.rotationIndex];
+        switch (game) {
+            default: break;
+            case GameType.Scales: {
+                endScaleGame(this);
+            } break;
+            case GameType.Math: {
+                endMathGame(this);
+            } break;
+            case GameType.PaperFolding: {
+
+            } break;
+        }
+        
+        // Send the generic game end message to all players
+        this.getAllPlayers().forEach(p => {
+            p.sendMessage(GenericMessageType.GameEnd, GameType.None, JSON.stringify({
+                timestamp: Date.now(),
+                delay: this.params.gameDelay * 1000
+            }));
+        });
+
+        // Start the countdown before the next game
+        setTimeout(this.startNextGame, this.params.gameDelay * 1000);
+    }
+
+    // Starts the next game in the rotation
+    startNextGame = () => {
+        if (!this.gameStarted) return;
+
+        const game = this.gameRotation[this.rotationIndex];
+        switch (game) {
+            default: break;
+            case GameType.Scales: {
+                startScaleGame(this);
+            } break;
+            case GameType.Math: {
+                startMathGame(this);
+            } break;
+            case GameType.PaperFolding: {
+
+            } break;
+        }
+
+        this.rotationIndex++;
+        if (this.rotationIndex >= this.gameRotation.length) {
+            this.currentRotation++;
+            this.rotationIndex = 0;
+
+            // TODO: max rotation
+            if (this.currentRotation > this.params.rotationCount) {
+
+            }
+        }
+
+        // Send the generic game start message to all players
+        this.getAllPlayers().forEach(p => {
+            p.sendMessage(GenericMessageType.GameStart, GameType.None, JSON.stringify({
+                timestamp: Date.now(),
+                duration: this.params.gameLength * 1000
+            }));
+        });
+
+        // Start the game timer
+        setTimeout(this.endGame, this.params.gameLength);
     }
 }
 

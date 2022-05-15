@@ -4,5 +4,9 @@ export enum UnspecifiedMessageType {
     PlayerJoin,
     PlayerLeave,
     RoomCreated,
-    KickPlayer
+    KickPlayer,
+    GameStart,
+    GameEnd,
+    ReadyState,
+    GameRotation,
 };

@@ -1,5 +1,6 @@
 import { Lobby } from "../Lobby";
 import { Player } from "../Player";
+import { shuffle } from "../Util";
 
 // Define message types for this handler
 enum ScaleMessageType {
@@ -42,17 +43,6 @@ const animalList: Record<string, number[]> = {
     "lion": [20, 30],
     "elephant": [30, 40]
 };
-
-// Shuffle an array of strings
-const shuffle = (arr: string[]) => {
-    let count = arr.length, rand: number, temp: string;
-    while (count) {
-        rand = Math.random() * count-- | 0;
-        temp = arr[count];
-        arr[count] = arr[rand];
-        arr[rand] = temp;
-    }
-}
 
 const generateSolution = () => {
     const equalityCount = 2; // number of equality scales
@@ -203,4 +193,8 @@ export const startGame = (lobby: Lobby) => {
     });
 
     lobby.gameState = state;
+}
+
+export const endGame = (lobby: Lobby) => {
+
 }

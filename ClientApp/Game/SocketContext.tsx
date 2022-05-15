@@ -8,17 +8,32 @@ import { UnspecifiedMessageType } from "../Definitions/Socket/UnspecifiedGame";
 import { Player } from "../Definitions/Socket/Player";
 import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
 import { useUnspecifiedGame } from "./UnspecifiedGame";
+import { useMathGame } from "./MathGame";
 
 export interface BaseState {
     hostRoomId: string;
     playerList: Player[];
     localPlayer: Player | undefined;
+    rotationIndex: number;
+    gameRotation: GameType[];
+    timerTimestamp: number;
+    timerDuration: number;
 }
+
+const TEST_PLAYER_LIST: Player[] = [
+    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false },
+    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true },
+    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false },
+];
 
 const DEFAULT_STATE: BaseState = {
     hostRoomId: "",
-    playerList: [],
-    localPlayer: undefined
+    playerList: TEST_PLAYER_LIST,
+    localPlayer: undefined,
+    rotationIndex: 0,
+    gameRotation: [ GameType.Unspecified ],
+    timerTimestamp: 0,
+    timerDuration: 0
 }
 
 export interface SocketContext {
@@ -107,8 +122,8 @@ export const SocketContextProvider = (props: Props) => {
         onMessage: processMessage
     });
 
-    const sendMessageType = (msgType: number, gameType: GameType, data: string) => {
-        const str = JSON.stringify({ msgType, gameType, data });
+    const sendMessageType = (messageType: number, gameType: GameType, data: string) => {
+        const str = JSON.stringify({ messageType, gameType, data });
         const blob = new Blob([str], {
             type: "application/json"
         });
@@ -121,7 +136,7 @@ export const SocketContextProvider = (props: Props) => {
         [GameType.Unspecified]: useUnspecifiedGame({ sendMessage: sendMessageType, baseState, setBaseState }),
         [GameType.Scales]: {} as GameContext,
         [GameType.PaperFolding]: {} as GameContext,
-        [GameType.Math]: {} as GameContext,
+        [GameType.Math]: useMathGame({ sendMessage: sendMessageType, baseState, setBaseState }),
     };
 
     const getGame = (type: GameType) => {

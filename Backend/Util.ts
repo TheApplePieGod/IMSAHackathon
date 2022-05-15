@@ -12,3 +12,13 @@ export const createRoomId = () => {
         return r.toString(16);
     });
 }
+
+export const shuffle = (arr: any) => {
+    let count = arr.length, rand: number, temp: any;
+    while (count) {
+        rand = Math.random() * count-- | 0;
+        temp = arr[count];
+        arr[count] = arr[rand];
+        arr[rand] = temp;
+    }
+}

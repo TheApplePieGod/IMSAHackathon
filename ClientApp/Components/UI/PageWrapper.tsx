@@ -3,7 +3,6 @@ import { Box, Paper, useTheme, IconButton } from "@mui/material";
 import { useLocation, useNavigate } from "react-router";
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
-import Image from 'material-ui-image';
 
 interface Props {
     children: React.ReactNode | React.ReactNode[];
@@ -20,49 +19,34 @@ export const PageWrapper = (props: Props) => {
     }, [location.pathname]);
 
     return (
-        <Box sx={{ 
-            width: "100%",
-            height: "100%"
-        }}>
-            <Paper
-                square
-                elevation={1}
-                sx={{
-                    height: "60px",
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 10,
-                    display: "flex",
-                    flexDirection: "row-reverse",
-                    alignItems: "center",
-                    paddingRight: "0.5rem"
-                }}
-            >
-                <IconButton onClick={() => navigate("/")}>
-                    <HomeIcon sx={{ color: "text.primary" }} />
-                </IconButton>
-                <IconButton onClick={() => navigate("/about")}>
-                    <InfoIcon sx={{ color: "text.primary" }} />
-                </IconButton>
-            </Paper>
-            {props.children}
+        <React.Fragment>
+            <Box sx={{ 
+                width: "100%",
+                height: "100%",
+                minWidth: 500,
+                maxWidth: 1400,
+                padding: "0 50px 0 50px",
+                margin: "auto"
+            }}>
+                {props.children}
+            </Box>
             <Box sx={{
                 width: "100%",
                 position: "fixed",
                 bottom: "0px",
                 display: "flex",
-                justifyContent: "center"
+                justifyContent: "center",
             }}>
                 <Box sx={{
                     width: "75%",
                     height: "300px",
                     backgroundRepeat: "no-repeat",
-                    backgroundImage: "url(fern.png)",
+                    backgroundImage: "url(/images/fern.png)",
                     backgroundPosition: "center",
                     backgroundSize: "100%",
                     transform: "translateY(50%)"
                 }}/>
             </Box>
-        </Box>
+        </React.Fragment>
     );
 }

@@ -12,7 +12,7 @@ const Decoration = () => {
                 minWidth: "500px",
                 backgroundSize: "80% 100%",
                 backgroundRepeat: "no-repeat",
-                backgroundImage: "url(tree.png)",
+                backgroundImage: "url(/images/tree.png)",
                 backgroundPosition: "center",
                 bottom: "0px",
             }}/>
@@ -24,7 +24,7 @@ const Decoration = () => {
                 minWidth: "500px",
                 backgroundSize: "80% 100%",
                 backgroundRepeat: "no-repeat",
-                backgroundImage: "url(tree.png)",
+                backgroundImage: "url(/images/tree.png)",
                 backgroundPosition: "center",
                 bottom: "0px",
                 transform: "scaleX(-1)"
