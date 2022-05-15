@@ -11,6 +11,7 @@ interface Props {
 export const PageWrapper = (props: Props) => {
     const location = useLocation();
     const navigate = useNavigate();
+
     const theme = useTheme();
 
     // scroll to top upon navigation
@@ -20,6 +21,19 @@ export const PageWrapper = (props: Props) => {
 
     return (
         <React.Fragment>
+            {location.pathname == "/" && 
+                <Box sx={{
+                    position: "fixed",
+                    width: "100%",
+                    height: "200px",
+                    backgroundRepeat: "repeat-x",
+                    backgroundImage: "url(/images/vines.png)",
+                    backgroundPosition: "top",
+                    padding: "100px",
+                    backgroundSize: "20%",
+                    transform: "translateY(-20%)"
+                }}/>
+            }
             <Box sx={{ 
                 width: "100%",
                 height: "100%",
