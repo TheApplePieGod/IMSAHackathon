@@ -33,7 +33,7 @@ const TEST_PLAYER_LIST: Player[] = [
 
 const DEFAULT_STATE: BaseState = {
     hostRoomId: "",
-    playerList: TEST_PLAYER_LIST,
+    playerList: [],
     localPlayer: undefined,
     rotationIndex: 0,
     gameRotation: [ GameType.Unspecified ],

@@ -9,3 +9,7 @@
 2. Run `npm install`
 3. Run `npm run start`
 4. Open a browser and navigate to `http://localhost:8080`
+
+### To Run the Server
+1. Navigate a terminal to the project root
+2. Run `npm run server`
