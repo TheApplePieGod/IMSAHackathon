@@ -39,12 +39,14 @@ const StyledButton = styled(Button)(
 const LobbyPage = (props: Props) => {
     const navigate = useNavigate();
     const socketContext = useSocketContext();
-    let { localPlayer, playerList, currentGame } = socketContext.baseState;
-    currentGame = GameType.Scales;
+    let { localPlayer, playerList, gameRotation } = socketContext.baseState;
 
     // If the roomid is zero, we know that the server will send us the new lobby id
     const { roomIdString } = useParams<{ roomIdString: string; }>();
     const roomId = roomIdString == "0" ? socketContext.baseState.hostRoomId : roomIdString;
+
+    const [previewIndex, setPreviewIndex] = React.useState(0);
+    const previewGame = gameRotation[previewIndex];
 
     const getProtocol = () => {
         return "http";
@@ -85,10 +87,16 @@ const LobbyPage = (props: Props) => {
                     gap: "2rem"
                 }}
             >
-                <Box sx={{ height: "50%", flexGrow: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                    <Carousel images={["/images/fern.png", "/images/title.png", "/images/tree.png"]} />
+                <Box sx={{ height: "50%", flexGrow: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", maxWidth: "700px" }}>
+                    <Carousel
+                        image={gameInfoMap[previewGame].previewURL}
+                        steps={gameRotation.length}
+                        currentStep={previewIndex}
+                        next={() => setPreviewIndex(previewIndex + 1)}
+                        back={() => setPreviewIndex(previewIndex - 1)}
+                    />
                     <Typography variant="h4" sx={{ fontFamily: "'Manteiga Gorda'", textAlign: "center" }}>
-                        {gameInfoMap[currentGame].name}
+                        {gameInfoMap[previewGame].name}
                     </Typography>
                 </Box>
                 <Box
@@ -103,7 +111,7 @@ const LobbyPage = (props: Props) => {
                     }}
                 >
                     <OutlinedBox sx={{ width: "100%", flexGrow: 2, textAlign: "center" }}>
-                        <Typography variant="body1">{gameInfoMap[currentGame].description}</Typography>
+                        <Typography variant="body1">{gameInfoMap[previewGame].description}</Typography>
                     </OutlinedBox>
                     <Box
                         sx={{

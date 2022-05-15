@@ -33,6 +33,15 @@ export const useUnspecifiedGame = (props: Props) => {
                     };
                 })
             } break;
+            case UnspecifiedMessageType.GameRotation: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    return {
+                        ...p,
+                        gameRotation: parsed
+                    };
+                })
+            } break;
             case UnspecifiedMessageType.ReadyState: {
                 const parsed = JSON.parse(data);
                 props.setBaseState((p) => {

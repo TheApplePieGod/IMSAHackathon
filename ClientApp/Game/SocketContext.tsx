@@ -14,7 +14,10 @@ export interface BaseState {
     hostRoomId: string;
     playerList: Player[];
     localPlayer: Player | undefined;
-    currentGame: GameType;
+    rotationIndex: number;
+    gameRotation: GameType[];
+    timerTimestamp: number;
+    timerDuration: number;
 }
 
 const TEST_PLAYER_LIST: Player[] = [
@@ -27,7 +30,10 @@ const DEFAULT_STATE: BaseState = {
     hostRoomId: "",
     playerList: TEST_PLAYER_LIST,
     localPlayer: undefined,
-    currentGame: GameType.Unspecified
+    rotationIndex: 0,
+    gameRotation: [ GameType.Unspecified ],
+    timerTimestamp: 0,
+    timerDuration: 0
 }
 
 export interface SocketContext {

@@ -2,7 +2,11 @@
 import { styled, Box, MobileStepper, Button } from "@mui/material";
 
 interface Props {
-    images: string[]
+    image: string;
+    steps: number;
+    currentStep: number;
+    next: () => void;
+    back: () => void;
 }
 
 const OutlinedBox = styled("div")(
@@ -14,18 +18,6 @@ const OutlinedBox = styled("div")(
 );
 
 export const Carousel = (props: Props) => {
-    const [index, setIndex] = React.useState(0);
-
-    const handleNext = () => {
-        setIndex(index + 1);
-    };
-    
-    const handleBack = () => {
-        setIndex(index - 1);
-    };
-
-    if (props.images.length == 0) return <></>;
-
     return (
         <React.Fragment>
             <OutlinedBox
@@ -36,11 +28,11 @@ export const Carousel = (props: Props) => {
                     overflow: "hidden"
                 }}
             >
-                <img src={props.images[index]} width={"100%"} height={"100%"} />
+                <img src={props.image} width={"100%"} height={"100%"} />
             </OutlinedBox>
             <MobileStepper
                 variant="dots"
-                steps={props.images.length}
+                steps={props.steps}
                 sx={{
                     position: "relative",
                     "& .MuiMobileStepper-dot": {
@@ -53,7 +45,7 @@ export const Carousel = (props: Props) => {
                     marginTop: "-1rem",
                     background: "transparent"
                 }}
-                activeStep={index}
+                activeStep={props.currentStep}
                 nextButton={
                     <Button
                         size="small"
@@ -68,8 +60,8 @@ export const Carousel = (props: Props) => {
                             mixBlendMode: "darken",
                             transform: "scaleY(-1)"
                         }}
-                        onClick={handleNext}
-                        disabled={index == props.images.length - 1}
+                        onClick={props.next}
+                        disabled={props.currentStep == props.steps - 1}
                     />
                 }
                 backButton={
@@ -86,8 +78,8 @@ export const Carousel = (props: Props) => {
                             opacity: "0.8",
                             mixBlendMode: "darken"
                         }}
-                        onClick={handleBack}
-                        disabled={index == 0}
+                        onClick={props.back}
+                        disabled={props.currentStep == 0}
                     />
                 }
             />

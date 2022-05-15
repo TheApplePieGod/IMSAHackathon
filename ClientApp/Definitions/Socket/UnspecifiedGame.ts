@@ -7,5 +7,6 @@ export enum UnspecifiedMessageType {
     KickPlayer,
     GameStart,
     GameEnd,
-    ReadyState
+    ReadyState,
+    GameRotation,
 };

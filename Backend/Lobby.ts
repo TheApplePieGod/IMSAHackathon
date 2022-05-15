@@ -43,7 +43,11 @@ export class Lobby {
     // Updates the game rotation with three random games
     updateGameRotation = () => {
         this.gameRotation = [];
-        Object.getOwnPropertyNames(GameType).forEach(p => this.gameRotation.push(parseInt(p)));
+        Object.getOwnPropertyNames(GameType).forEach(p => {
+            const num = Number(p);
+            if (!isNaN(num) && num > 0) // Exclude 'None' game
+                this.gameRotation.push(num)
+        });
         shuffle(this.gameRotation);
     }
 

@@ -12,7 +12,8 @@ export enum GenericMessageType {
     KickPlayer,
     GameStart,
     GameEnd,
-    ReadyState
+    ReadyState,
+    GameRotation
 }
 
 // The GenericHandler handles things like the lobby, etc.

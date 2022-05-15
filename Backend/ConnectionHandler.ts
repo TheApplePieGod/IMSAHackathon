@@ -1,5 +1,7 @@
 import { IncomingMessage } from "http";
 import * as ws from "ws";
+import { GameType } from "./Games/GameType";
+import { GenericMessageType } from "./GenericHandler";
 import { doesLobbyExist, lobbies, Lobby, removeLobby } from "./Lobby";
 import { handleMessage } from "./MessageHandler";
 import { Player } from "./Player";
@@ -59,6 +61,9 @@ export const connectionHandler = (socket: ws.WebSocket, req: IncomingMessage) =>
     // Send the player their own information
     // isCurrent is true because the player is themselves
     player.onPlayerJoin(player, true);
+
+    // Send the lobby's game rotation
+    player.sendMessage(GenericMessageType.GameRotation, GameType.None, JSON.stringify(lobby.gameRotation));
 
     socket.on('close', () => {
         // Remove the player from the lobby when the connection is closed

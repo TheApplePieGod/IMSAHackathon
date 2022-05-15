@@ -15,16 +15,16 @@ export const gameInfoMap: Record<GameType, GameInfo> = {
     [GameType.Scales]: {
         name: "Creature Capture",
         description: "In Creature Capture, you will be given two scales showing how heavy animals are, and you must find which way the third scale will tilt! You can see your friends' progress on the side and everyone's number of correct solutions. After the time is up, you will be given points based on how many you got right.",
-        previewURL: ""
+        previewURL: "/images/caterpillar.png"
     },
     [GameType.PaperFolding]: {
         name: "Bookworms",
         description: "Bookworms description",
-        previewURL: ""
+        previewURL: "/images/butterfly.png"
     },
     [GameType.Math]: {
         name: "Bug Hunt",
         description: "Bug hunt description",
-        previewURL: ""
+        previewURL: "/images/fern.png"
     }
 }
