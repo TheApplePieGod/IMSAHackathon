@@ -1,11 +1,33 @@
 import * as React from "react";
-import { Box, Divider, Typography, Button, TextField, Dialog, Paper, DialogTitle } from "@mui/material";
+import { styled, Box, Divider, Typography, Button, TextField, Dialog, Paper, DialogTitle } from "@mui/material";
 import Trees from '../UI/Trees';
 import { useNavigate } from "react-router-dom";
 import {Player} from "../../Definitions/Socket/Player";
 
-const GameWrapper = () => {
+const OutlinedBox = styled("div")(
+    ({ theme }) => `
+        border: 3px solid #AFA87A;
+        border-radius: 12px;
+        padding: 1rem;
+        background-color: #D0C790;
+    `
+);
 
+const StyledButton = styled(Button)(
+    ({ theme }) => `
+        border: 2px solid #736F54;
+        background-color: #A2845A;
+        box-shadow: 5px 5px 6px #00000029;
+        border-radius: 20px;
+        padding: 1rem;
+        &:hover {
+            background-color: #A2845A;
+            box-shadow: 5px 5px 6px #00000029;
+        }
+    `
+);
+
+const GameWrapper = () => {
     const playerList: Player[] = [];
     playerList.push({name: "Joe", id: "", isHost: false, isCurrent: true});
     playerList.push({name: "Biden", id: "", isHost: false, isCurrent: false});
@@ -13,55 +35,58 @@ const GameWrapper = () => {
 
     return (
         <Box sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
+            height: "100%",
+            width: "100%",
+            paddingTop: "50px"
         }}>
-            <Paper sx={{
-                width: "75%",
-                margin: "20px",
-                padding: "10px"
+            <Box sx={{
+                width: "100%",
+                height: "75%",
+                display: "flex",
+                gap: "1rem"
             }}>
                 <Box sx={{
                     display: "flex",
-                    gap: "1rem"
+                    width: "100%",
+                    height: "100%",
+                    flexDirection: "column"
                 }}>
-                    <Box sx={{
-                        width: "75%",
-                        borderRadius: "15px",
-                        border: "3px solid #736F54",
-                        backgroundColor: "#D0C790"
+                    <OutlinedBox sx={{
+                        width: "100%",
+                        height: "100%",
                     }}>
-                    </Box>
+                    </OutlinedBox>
 
                     <Box sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1rem",
+                        display: "flex"
                     }}>
-                        {
-                            playerList.map((player, i) => {
-                                return (
-                                    <Box>
-                                        <Box sx={{
-
-                                            height: "300px",
-                                            width: "300px",
-                                            borderRadius: "15px",
-                                            border: "3px solid #736F54",
-                                            backgroundColor: "#D0C790"
-                                        }}>
-
-                                        </Box>
-                                        <Typography>{player.name}</Typography>
-                                    </Box>
-                                    
-                                )
-                            })
-                        }
+                        <Typography>You</Typography>
+                        <Typography>0 pts</Typography>
                     </Box>
                 </Box>
-            </Paper>
+                
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                }}>
+                    {
+                        playerList.map((player, i) => {
+                            return (
+                                <Box>
+                                    <OutlinedBox sx={{
+                                        height: "250px",
+                                        width: "300px",
+                                    }}>
+
+                                    </OutlinedBox>
+                                    <Typography>{player.name}</Typography>
+                                </Box>
+                            )
+                        })
+                    }
+                </Box>
+            </Box>
         </Box>
     )
 }
