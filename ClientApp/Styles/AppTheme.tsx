@@ -8,17 +8,18 @@ export const createAppTheme = () => {
 	let theme = createTheme({
 		palette: {
 			primary: {
-				main: amber[500],
+				main: "#A2845A",
+				contrastText: "#454F25"
 			},
 			secondary: {
 				main: deepOrange[500],
 			},
 			background: {
-				default: blueGrey[800],
-				paper: blueGrey[900]
+				default: "#C3BA83",
+				paper: "#9e9665"
 			},
 			text: {
-				primary: blueGrey[50]
+				primary: "#454F25"
 			}
 		},
 		typography: {
@@ -27,9 +28,16 @@ export const createAppTheme = () => {
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: {
-
+					
 				}
 			},
+			MuiButton: {
+				styleOverrides: {
+					root: {
+						borderRadius: "10px"
+					}
+				}
+			}
 		}
 	});
 
