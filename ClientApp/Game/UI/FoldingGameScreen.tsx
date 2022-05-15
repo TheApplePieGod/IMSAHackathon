@@ -6,6 +6,7 @@ import { FoldingGameState } from "../FoldingGame";
 import { FoldingMessageType, instructionSet } from "../../Definitions/Socket/FoldingGame";
 import { Canvas } from "../../Components/UI/Canvas";
 import FoldingGameInput from "./FoldingGameInput";
+import { FoldingGamePaper } from "./FoldingGamePaper";
 
 interface Props {
     player: string;
@@ -37,7 +38,7 @@ export const FoldingGameScreen = (props: Props) => {
 
     const isLocalPlayer = baseState.localPlayer?.id === props.player;
 
-    const [dots, setDots] = React.useState<boolean[]>(Array(16).fill(true));
+    const [dots, setDots] = React.useState<boolean[]>(Array(16).fill(false));
 
     const submitAnswer = () => {
         // Convert the boolean array to a 2d array of coordinates
@@ -59,6 +60,7 @@ export const FoldingGameScreen = (props: Props) => {
 
     const next = () => {
         socketContext.sendMessage(FoldingMessageType.NewSequence, GameType.PaperFolding, "");
+        setDots(Array(16).fill(false));
     }
 
     const renderNextButton = () => {
@@ -100,6 +102,10 @@ export const FoldingGameScreen = (props: Props) => {
                                 <Typography sx={{
                                     margin: "1rem"
                                 }} variant="h5">{`Step ${index + 1}`}</Typography>
+                            }
+                            <FoldingGamePaper player={props.player} index={index}/>
+                            {(item == 4 && isLocalPlayer) &&
+                                <img width={"25%"} src="images/bug.png" />
                             }
                         </Grid>
                     )

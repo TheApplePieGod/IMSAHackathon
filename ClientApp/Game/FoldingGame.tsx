@@ -35,7 +35,7 @@ export const useFoldingGame = (props: Props) => {
                 setState(p => {
                     p.players[parsed.player] = {
                         instructions: parsed.instructions,
-                        sequence: parsed.sequences,
+                        sequence: parsed.sequence,
                         points: parsed.points,
                         cycles: parsed.cycles,
                         correct: undefined,

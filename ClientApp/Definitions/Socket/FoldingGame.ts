@@ -28,7 +28,7 @@ export interface Sequence {
 
 export interface PlayerState {
     instructions: Instruction[];
-    sequence: Sequence; // Player's own unique sequence
+    sequence: Sequence | undefined; // Player's own unique sequence
     points: number;
     cycles: number;
     correct: number | undefined;

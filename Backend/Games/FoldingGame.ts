@@ -423,13 +423,12 @@ export const handleMessage = (lobby: Lobby, player: Player, messageType: Folding
             if (playerState.answered) break;
 
             const selections: number[][] = JSON.parse(data);
-            if (selections.length != state.paperSize * state.paperSize) break;
 
             const solution = findSolution(playerState.instructions, playerState.sequence);
             let points = 0;
             let correct = 0;
             selections.forEach(position => {
-                if (solution[position[0]][position[1]]) {
+                if (solution[position[1]][position[0]]) {
                     points += 50;
                     correct++;
                 }

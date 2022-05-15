@@ -38,9 +38,9 @@ export class Lobby {
         this.rotationIndex = 0;
         this.currentRotation = 0;
         this.params = {
-            gameLength: 300,
-            gameDelay: 5,
-            rotationCount: 2
+            gameLength: 45,
+            gameDelay: 10,
+            rotationCount: 1
         };
 
         this.updateGameRotation();
@@ -48,14 +48,14 @@ export class Lobby {
 
     // Updates the game rotation with three random games
     updateGameRotation = () => {
-        this.gameRotation = [GameType.PaperFolding];
-        // this.gameRotation = [];
-        // Object.getOwnPropertyNames(GameType).forEach(p => {
-        //     const num = Number(p);
-        //     if (!isNaN(num) && num > 0) // Exclude 'None' game
-        //         this.gameRotation.push(num)
-        // });
-        // shuffle(this.gameRotation);
+        // this.gameRotation = [GameType.PaperFolding];
+        this.gameRotation = [];
+        Object.getOwnPropertyNames(GameType).forEach(p => {
+            const num = Number(p);
+            if (!isNaN(num) && num > 0) // Exclude 'None' game
+                this.gameRotation.push(num)
+        });
+        shuffle(this.gameRotation);
     }
 
     // Returns a list of all players including the host
@@ -155,6 +155,12 @@ export class Lobby {
             } break;
         }
         
+        this.rotationIndex++;
+        if (this.rotationIndex >= this.gameRotation.length) {
+            this.currentRotation++;
+            this.rotationIndex = 0;
+        }
+
         // Whether or not the game that ended was the last game
         const lastGame = this.currentRotation >= this.params.rotationCount;
 
@@ -194,17 +200,12 @@ export class Lobby {
             } break;
         }
 
-        this.rotationIndex++;
-        if (this.rotationIndex >= this.gameRotation.length) {
-            this.currentRotation++;
-            this.rotationIndex = 0;
-        }
-
         // Send the generic game start message to all players
         this.getAllPlayers().forEach(p => {
             p.sendMessage(GenericMessageType.GameStart, GameType.None, JSON.stringify({
                 timestamp: Date.now(),
-                duration: this.params.gameLength * 1000
+                duration: this.params.gameLength * 1000,
+                rotationIndex: this.rotationIndex
             }));
         });
 

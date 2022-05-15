@@ -45,7 +45,7 @@ const FoldingGameInput = (props: Props) => {
         let gridX = Math.floor(x / (CANVAS_SIZE / 4));
         let gridY = Math.floor(y / (CANVAS_SIZE / 4));
         
-        let newDots = {...dots};
+        let newDots = [...dots];
         newDots[4 * gridY + gridX] = !newDots[4 * gridY + gridX];
 
         setDots(newDots);
