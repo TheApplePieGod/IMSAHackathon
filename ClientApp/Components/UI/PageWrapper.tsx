@@ -3,6 +3,7 @@ import { Box, Paper, useTheme, IconButton } from "@mui/material";
 import { useLocation, useNavigate } from "react-router";
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
+import Image from 'material-ui-image';
 
 interface Props {
     children: React.ReactNode | React.ReactNode[];
@@ -19,7 +20,10 @@ export const PageWrapper = (props: Props) => {
     }, [location.pathname]);
 
     return (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ 
+            width: "100%",
+            height: "100%"
+        }}>
             <Paper
                 square
                 elevation={1}
@@ -42,6 +46,23 @@ export const PageWrapper = (props: Props) => {
                 </IconButton>
             </Paper>
             {props.children}
+            <Box sx={{
+                width: "100%",
+                position: "fixed",
+                bottom: "0px",
+                display: "flex",
+                justifyContent: "center"
+            }}>
+                <Box sx={{
+                    width: "75%",
+                    height: "300px",
+                    backgroundRepeat: "no-repeat",
+                    backgroundImage: "url(fern.png)",
+                    backgroundPosition: "center",
+                    backgroundSize: "100%",
+                    transform: "translateY(50%)"
+                }}/>
+            </Box>
         </Box>
     );
 }
