@@ -76,7 +76,7 @@ const generateInstructions = () => {
         // Filter out:
         //  (a) All half-folds that are in the same dimension as the instruction selected
         //  (b) All quarter-folds that follow half-folds of the same dimension
-        intInstructions.filter((value) => {
+        intInstructions = intInstructions.filter((value) => {
             if (instructionSet[value][0] == 2) { // Filter (a)
                 if (instructionSet[instruction][1] != 0 && instructionSet[value][1] != 0) return false;
                 if (instructionSet[instruction][2] != 0 && instructionSet[value][2] != 0) return false;    
@@ -100,7 +100,12 @@ const generateInstructions = () => {
 
 const generateSequence = (instructions: Instruction[]) => {
     let paperSequence: Paper[] = [];
-    let holeSequence : boolean[][] = [];
+    let holeSequence : boolean[][] = [
+        [false, false, false, false],
+        [false, false, false, false],
+        [false, false, false, false],
+        [false, false, false, false],
+    ];
 
     let startPaper = {layers: [
         [1, 1, 1, 1],
@@ -162,11 +167,11 @@ const generateSequence = (instructions: Instruction[]) => {
                     let changed = false;
                     
                     for (let col = 0; col < 4; col++) {
-                        if (newPaper.layer[row][col] == 0) continue;
+                        if (newPaper.layers[row][col] == 0) continue;
                         else {
                             changed = true;
-                            newPaper.layer[row - 1][col] = newPaper.layer[row - 1][col] + newPaper.layer[row][col];
-                            newPaper.layer[row][col] = 0;
+                            newPaper.layers[row - 1][col] = newPaper.layers[row - 1][col] + newPaper.layers[row][col];
+                            newPaper.layers[row][col] = 0;
                         }
                     }
 
@@ -181,11 +186,11 @@ const generateSequence = (instructions: Instruction[]) => {
                     let changed = false;
                 
                     for (let col = 0; col < 4; col++) {
-                        if (newPaper.layer[row][col] == 0) continue;
+                        if (newPaper.layers[row][col] == 0) continue;
                         else {
                             changed = true;
-                            newPaper.layer[row + 1][col] = newPaper.layer[row + 1][col] + newPaper.layer[row][col];
-                            newPaper.layer[row][col] = 0;
+                            newPaper.layers[row + 1][col] = newPaper.layers[row + 1][col] + newPaper.layers[row][col];
+                            newPaper.layers[row][col] = 0;
                         }
                     }
 
@@ -200,11 +205,11 @@ const generateSequence = (instructions: Instruction[]) => {
                     let changed = false;
                     
                     for (let row = 0; row < 4; row++) {
-                        if (newPaper.layer[row][col] == 0) continue;
+                        if (newPaper.layers[row][col] == 0) continue;
                         else {
                             changed = true;
-                            newPaper.layer[row][col - 1] = newPaper.layer[row][col - 1] + newPaper.layer[row][col];
-                            newPaper.layer[row][col] = 0;
+                            newPaper.layers[row][col - 1] = newPaper.layers[row][col - 1] + newPaper.layers[row][col];
+                            newPaper.layers[row][col] = 0;
                         }
                     }
 
@@ -219,11 +224,11 @@ const generateSequence = (instructions: Instruction[]) => {
                     let changed = false;
                 
                     for (let row = 0; row < 4; row++) {
-                        if (newPaper.layer[row][col] == 0) continue;
+                        if (newPaper.layers[row][col] == 0) continue;
                         else {
                             changed = true;
-                            newPaper.layer[row][col + 1] = newPaper.layer[row][col + 1] + newPaper.layer[row][col];
-                            newPaper.layer[row][col] = 0;
+                            newPaper.layers[row][col + 1] = newPaper.layers[row][col + 1] + newPaper.layers[row][col];
+                            newPaper.layers[row][col] = 0;
                         }
                     }
 
