@@ -19,7 +19,8 @@ export const createAppTheme = () => {
 				paper: "#9e9665"
 			},
 			text: {
-				primary: "#454F25"
+				primary: "#454F25",
+				secondary: "#A2845AAF"
 			}
 		},
 		typography: {

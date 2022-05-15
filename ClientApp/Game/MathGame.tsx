@@ -1,26 +1,34 @@
 import * as React from "react";
 import { GameType } from "../Definitions/Socket/GameType";
 import { BaseState } from "./SocketContext";
-import { MathMessageType } from "../Definitions/Socket/MathGame";
+import { MathGameResults, MathMessageType } from "../Definitions/Socket/MathGame";
 
 interface PlayerState {
     options: string[];
     score: number;
+    selections: number[];
+    cycles: number;
 }
 
 export interface MathGameState {
     players: Record<string, PlayerState>;
+    results: MathGameResults[];
+    maxChoices: number;
 }
 
 const TEST_PLAYER_STATE = {
     "player1": {
         options: ["17/8", "2", "15/6", "2.80", "3/2", "2.35", "3", "3/1.2"],
-        score: 200
-    }
+        score: 200,
+        selections: [],
+        cycles: 0
+    },
 };
 
 const DEFAULT_STATE: MathGameState = {
-    players: TEST_PLAYER_STATE
+    players: TEST_PLAYER_STATE,
+    results: [],
+    maxChoices: 0
 };
 
 interface Props {
@@ -37,13 +45,45 @@ export const useMathGame = (props: Props) => {
             default:
             { } break;
             case MathMessageType.GameStarted: {
-                
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    return {
+                        ...p,
+                        maxChoices: parsed.maxChoices
+                    };
+                });
+            } break;
+            case MathMessageType.GameEnded: {
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    return {
+                        ...p,
+                        results: parsed
+                    };
+                });
             } break;
             case MathMessageType.NewOptions: {
                 const parsed = JSON.parse(data);
                 setState(p => {
-                    p.players[parsed.id] = {
+                    p.players[parsed.player] = {
                         options: parsed.options,
+                        score: parsed.points,
+                        selections: [],
+                        cycles: parsed.cycles
+                    };
+
+                    return {
+                        ...p,
+                        players: { ...p.players }
+                    };
+                });
+            } break;
+            case MathMessageType.SubmitSelection: {
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    p.players[parsed.player] = {
+                        ...p.players[parsed.player],
+                        selections: [ ...p.players[parsed.player].selections, parsed.selection ],
                         score: parsed.points
                     };
 
