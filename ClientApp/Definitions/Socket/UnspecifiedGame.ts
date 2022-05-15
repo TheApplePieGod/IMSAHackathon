@@ -8,5 +8,5 @@ export enum UnspecifiedMessageType {
     GameStart,
     GameEnd,
     ReadyState,
-    GameRotation,
+    GameRotation
 };

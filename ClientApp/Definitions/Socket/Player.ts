@@ -4,4 +4,5 @@ export interface Player {
     isHost: boolean;
     isCurrent: boolean;
     ready: boolean;
+    score: number;
 }

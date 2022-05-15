@@ -61,7 +61,6 @@ export const Carousel = (props: Props) => {
                             transform: "scaleY(-1)"
                         }}
                         onClick={props.next}
-                        disabled={props.currentStep == props.steps - 1}
                     />
                 }
                 backButton={
@@ -79,7 +78,6 @@ export const Carousel = (props: Props) => {
                             mixBlendMode: "darken"
                         }}
                         onClick={props.back}
-                        disabled={props.currentStep == 0}
                     />
                 }
             />
