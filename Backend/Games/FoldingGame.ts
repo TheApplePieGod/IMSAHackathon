@@ -6,7 +6,7 @@ enum FoldingMessageType {
     None = 0,
     GameStarted,
     SubmitSelection,
-    NewOptions,
+    NewSequence,
 }
 
 enum Instruction {
@@ -30,18 +30,22 @@ interface Sequence {
 }
 
 interface PlayerState {
-    holes: boolean[][]; // Holes the player has currently chosen as their answer
+    // holes: boolean[][]; // Holes the player has currently chosen as their answer
+    instructions: Instruction[];
     sequence: Sequence; // Player's own unique sequence
-    solution: boolean[][] // Solution to player's own unique sequence
-    // Add point system
+    // solution: boolean[][] // Solution to player's own unique sequence
+    points: number,
+    cycles: number
 };
 
 interface FoldingGameState {
     players: Record<string, PlayerState>;
+    paperSize: number;
 };
 
 const DEFAULT_STATE: FoldingGameState = {
-    players: {}
+    players: {},
+    paperSize: 4
 };
 
 const instructionSet: Record<Instruction, number[]> = {
@@ -69,14 +73,22 @@ const generateInstructions = () => {
         const index = Math.floor(Math.random() * intInstructions.length);
         let instruction = intInstructions[index];
         
-        // Filter out all half-folds that are in the same dimension as the instruction selected
+        // Filter out:
+        //  (a) All half-folds that are in the same dimension as the instruction selected
+        //  (b) All quarter-folds that follow half-folds of the same dimension
         intInstructions.filter((value) => {
-            for (let i = 0; i < instructions.length; i++) {
-                if (instructionSet[value][0] == 2) {
-                    if (instructionSet[instruction][1] != 0 && instructionSet[value][1] != 0) return false;
-                    if (instructionSet[instruction][2] != 0 && instructionSet[value][2] != 0) return false;    
+            if (instructionSet[value][0] == 2) { // Filter (a)
+                if (instructionSet[instruction][1] != 0 && instructionSet[value][1] != 0) return false;
+                if (instructionSet[instruction][2] != 0 && instructionSet[value][2] != 0) return false;    
+            } else { // Filter (b)
+                if (instructions.length > 0) {
+                    if (instructionSet[instructions[0]][0] == 2) { // Only the first instruction being a half-fold can cause problems
+                        if (instructionSet[instructions[0]][1] != 0 && instructionSet[value][1] != 0) return false;
+                        if (instructionSet[instructions[0]][2] != 0 && instructionSet[value][2] != 0) return false;    
+                    }
                 }
             }
+
             return true;
         });
 
@@ -108,7 +120,7 @@ const generateSequence = (instructions: Instruction[]) => {
                         else newPaper.layers[row][col] = 0
                     }
                 }
-                paperSequence.push(newPaper)
+                paperSequence.push(newPaper);
             break;
             
             case Instruction.HalfDown:
@@ -119,7 +131,7 @@ const generateSequence = (instructions: Instruction[]) => {
                         else newPaper.layers[row][col] = 0
                     }
                 }
-                paperSequence.push(newPaper)
+                paperSequence.push(newPaper);
             break;
 
             case Instruction.HalfRight:
@@ -130,7 +142,7 @@ const generateSequence = (instructions: Instruction[]) => {
                         else newPaper.layers[row][col] = 0
                     }
                 }
-                paperSequence.push(newPaper)
+                paperSequence.push(newPaper);
             break;
 
             case Instruction.HalfLeft: 
@@ -141,7 +153,7 @@ const generateSequence = (instructions: Instruction[]) => {
                         else newPaper.layers[row][col] = 0
                     }
                 }
-                paperSequence.push(newPaper)
+                paperSequence.push(newPaper);
             break;
 
             case Instruction.QuarterUp: 
@@ -220,7 +232,7 @@ const generateSequence = (instructions: Instruction[]) => {
                 paperSequence.push(newPaper);
             break;
             
-            default: ;
+            default: break;
         }
     }
 
@@ -266,15 +278,156 @@ const findSolution = (instructions: Instruction[], sequence: Sequence) => {
     let solution: boolean[][] = JSON.parse(JSON.stringify(sequence.holes));
 
     for (let i = instructions.length - 1; i > -1; i++) {
-        // Reverse engineer the instructions here to get the solution matrix
-        instructions.length;
+        // Reverse engineer the instructions to get the solution matrix
+        switch (instructions[i]) {
+            case Instruction.HalfUp: 
+                for (let row = 0; row < 2; row++) {
+                    for (let col = 0; col < 4; col++) {
+                        if (paperToUnfold[row][col]) {
+                            paperToUnfold[3 - row][col] = true;
+                            solution[3 - row][col] = solution[row][col];
+                        }
+                    }
+                }
+            break;
+            
+            case Instruction.HalfDown:
+                for (let row = 3; row > 1; row--) {
+                    for (let col = 0; col < 4; col++) {
+                        if (paperToUnfold[row][col]) {
+                            paperToUnfold[3 - row][col] = true;
+                            solution[3 - row][col] = solution[row][col];
+                        }
+                    }
+                }
+            break;
+
+            case Instruction.HalfRight:
+                for (let col = 0; col < 2; col++) {
+                    for (let row = 0; row < 4; row++) {
+                        if (paperToUnfold[row][col]) {
+                            paperToUnfold[row][3 - col] = true;
+                            solution[row][3 - col] = solution[row][col];
+                        }
+                    }
+                }
+            break;
+
+            case Instruction.HalfLeft: 
+                for (let col = 3; col > 1; col--) {
+                    for (let row = 0; row < 4; row++) {
+                        if (paperToUnfold[row][col]) {
+                            paperToUnfold[row][3 - col] = true;
+                            solution[row][3 - col] = solution[row][col];
+                        }
+                    }
+                }
+            break;
+
+            case Instruction.QuarterUp: 
+                for (let row = 2; row > -1; row--) {
+                    let changed = false;
+
+                    for (let col = 0; col < 4; col++) {
+                        if (paperToUnfold[row][col]) {
+                            changed = true;
+                            paperToUnfold[row + 1][col] = true;
+                            solution[row + 1][col] = solution[row][col];
+                        }
+                    }
+
+                    if (changed) break;
+                }
+            break;
+            
+            case Instruction.QuarterDown: 
+                for (let row = 1; row < 4; row++) {
+                    let changed = false;
+
+                    for (let col = 0; col < 4; col++) {
+                        if (paperToUnfold[row][col]) {
+                            changed = true;
+                            paperToUnfold[row - 1][col] = true;
+                            solution[row - 1][col] = solution[row][col];
+                        }
+                    }
+
+                    if (changed) break;
+                }
+            break;
+
+            case Instruction.QuarterRight: 
+                for (let col = 2; col > -1; col--) {
+                    let changed = false;
+
+                    for (let row = 0; row < 4; row++) {
+                        if (paperToUnfold[row][col]) {
+                            changed = true;
+                            paperToUnfold[row][col + 1] = true;
+                            solution[row][col + 1] = solution[row][col];
+                        }
+                    }
+
+                    if (changed) break;
+                }
+            break;
+
+            case Instruction.QuarterLeft: 
+                for (let col = 1; col > 4; col++) {
+                    let changed = false;
+
+                    for (let row = 0; row < 4; row++) {
+                        if (paperToUnfold[row][col]) {
+                            changed = true;
+                            paperToUnfold[row][col - 1] = true;
+                            solution[row][col - 1] = solution[row][col];
+                        }
+                    }
+
+                    if (changed) break;
+                }
+            break;
+            
+            default: break;
+        }
     }
     
     return solution;
 }
 
 export const handleMessage = (lobby: Lobby, player: Player, messageType: FoldingMessageType, data: string) => {
-    
+    const state = lobby.gameState as FoldingGameState;
+
+    switch (messageType) {
+        default: break;
+
+        case FoldingMessageType.SubmitSelection: {
+            // Ensure player has a state value
+            if (!state.players.hasOwnProperty(player.id)) break;
+            const playerState = state.players[player.id];
+
+            const selections: number[][] = JSON.parse(data);
+            if (selections.length != state.paperSize) break;
+
+            const solution = findSolution(playerState.instructions, playerState.sequence);
+            selections.forEach(position => {
+                if (solution[position[0]][position[1]] == true) playerState.points += 50;
+            });
+
+            playerState.cycles++;
+            playerState.instructions = generateInstructions();
+            playerState.sequence = generateSequence(playerState.instructions);
+
+            lobby.getAllPlayers().forEach(p => {
+                p.sendMessage(FoldingMessageType.NewSequence, GameType.Math, JSON.stringify({
+                    player: player.id,
+                    instructions: playerState.instructions,
+                    sequence: playerState.sequence,
+                    points: playerState.points
+                }));
+            })
+        }
+    }
 }
 
 export const startGame = (lobby: Lobby) => {
@@ -284,23 +437,26 @@ export const startGame = (lobby: Lobby) => {
         let instructions: Instruction[] = generateInstructions();
         let sequence: Sequence = generateSequence(instructions);
         const playerState: PlayerState = {
-            holes: [
-                [false, false, false, false],
-                [false, false, false, false],
-                [false, false, false, false],
-                [false, false, false, false]
-            ],
+            // holes: [
+            //     [false, false, false, false],
+            //     [false, false, false, false],
+            //     [false, false, false, false],
+            //     [false, false, false, false]
+            // ],
+            instructions: instructions,
             sequence: sequence,
-            solution: findSolution(instructions, sequence)
-            // Add point system
+            // solution: findSolution(instructions, sequence)
+            points: 0,
+            cycles: 1
         };
         
         // Send this player's sequence to all players
         lobby.getAllPlayers().forEach(p2 => {
-            p2.sendMessage(FoldingMessageType.NewOptions, GameType.PaperFolding, JSON.stringify({
+            p2.sendMessage(FoldingMessageType.NewSequence, GameType.PaperFolding, JSON.stringify({
                 player: p.id,
-                sequence: playerState.sequence
-                // Add point system
+                instructions: playerState.instructions,
+                sequence: playerState.sequence,
+                points: 0
             }));
         });
     
