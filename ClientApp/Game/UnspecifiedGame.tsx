@@ -80,6 +80,17 @@ export const useUnspecifiedGame = (props: Props) => {
                     };
                 })
             } break;
+            case UnspecifiedMessageType.GameStart: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    return {
+                        ...p,
+                        timerTimestamp: parsed.timestamp,
+                        timerDuration: parsed.duration,
+                        lobbyOpen: false
+                    };
+                })
+            } break;
         }
     }
 

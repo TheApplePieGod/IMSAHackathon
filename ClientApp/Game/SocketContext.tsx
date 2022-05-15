@@ -18,6 +18,7 @@ export interface BaseState {
     gameRotation: GameType[];
     timerTimestamp: number;
     timerDuration: number;
+    lobbyOpen: boolean;
 }
 
 const TEST_PLAYER_LIST: Player[] = [
@@ -33,7 +34,8 @@ const DEFAULT_STATE: BaseState = {
     rotationIndex: 0,
     gameRotation: [ GameType.Unspecified ],
     timerTimestamp: 0,
-    timerDuration: 0
+    timerDuration: 0,
+    lobbyOpen: true
 }
 
 export interface SocketContext {

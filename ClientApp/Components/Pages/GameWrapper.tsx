@@ -1,10 +1,10 @@
 import React, {useEffect, useState, useRef} from "react";
-import { styled, Box, Divider, Typography, Button, TextField, Dialog, Paper, DialogTitle } from "@mui/material";
-import Trees from '../UI/Trees';
-import { useNavigate } from "react-router-dom";
+import { styled, Box, Divider, Typography, Button } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
-import {Player} from "../../Definitions/Socket/Player";
-
+import { Player } from "../../Definitions/Socket/Player";
+import { useSocketContext } from "../../Game/SocketContext";
+import { useNavigate } from "react-router";
+ 
 const OutlinedBox = styled("div")(
     ({ theme }) => `
         border: 3px solid #AFA87A;
@@ -28,14 +28,20 @@ const StyledButton = styled(Button)(
     `
 );
 
-const GameWrapper = () => {
-    const [startTime, setStartTime] = useState(0);
+interface Props {
+    render: (player: string) => React.ReactNode;
+}
+
+const GameWrapper = (props: Props) => {
+    const navigate = useNavigate();
+    const socketContext = useSocketContext();
+    const { timerTimestamp, timerDuration, playerList, localPlayer } = socketContext.baseState;
+
     const [timerCounter, setTimerCounter] = useState(0);
     const [timeText, setTimeText] = useState("9:99");
-    const duration = 90 * 1000;
 
     const getTimeRemaining = () => {
-        const total = startTime + duration - Date.now();
+        const total = timerTimestamp + timerDuration - Date.now();
         const seconds = Math.floor((total / 1000) % 60);
         const minutes = Math.floor((total / 1000 / 60) % 60);
         return {
@@ -53,21 +59,12 @@ const GameWrapper = () => {
         )
     }
 
-    const refreshTimeout = () => {  
+    useEffect(() => {
         const id = setTimeout(() => {
             updateTimer();
             setTimerCounter(timerCounter + 1);
-        }, 1000);
-    }
-
-    useEffect(() => {
-        refreshTimeout();
+        }, 250);
     }, [timerCounter]);
-
-    const playerList: Player[] = [];
-    playerList.push({name: "Joe", id: "", isHost: false, isCurrent: true});
-    playerList.push({name: "Biden", id: "", isHost: false, isCurrent: false});
-    playerList.push({name: "Bob", id: "", isHost: false, isCurrent: false});
 
     return (
         <Box sx={{
@@ -102,8 +99,7 @@ const GameWrapper = () => {
                             {timeText}
                         </Typography>
                         <HomeIcon onClick={() => {
-                            setStartTime(Date.now());
-                            refreshTimeout();
+                            navigate("/");
                         }} sx={{
                             position: "absolute",
                             bottom: "0px",
@@ -133,13 +129,14 @@ const GameWrapper = () => {
                 }}>
                     {
                         playerList.map((player, i) => {
+                            if (player.id === localPlayer?.id) return;
                             return (
-                                <Box>
+                                <Box key={player.id}>
                                     <OutlinedBox sx={{
                                         height: "200px",
                                         width: "250px",
                                     }}>
-
+                                        {props.render(player.id)}
                                     </OutlinedBox>
                                     <Box sx={{
                                         display: "flex",
