@@ -13,7 +13,8 @@ export enum GenericMessageType {
     GameStart,
     GameEnd,
     ReadyState,
-    GameRotation
+    GameRotation,
+    MatchEnd
 }
 
 // The GenericHandler handles things like the lobby, etc.

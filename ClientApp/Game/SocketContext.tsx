@@ -19,12 +19,13 @@ export interface BaseState {
     timerTimestamp: number;
     timerDuration: number;
     lobbyOpen: boolean;
+    gameEnded: boolean;
 }
 
 const TEST_PLAYER_LIST: Player[] = [
-    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false },
-    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true },
-    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false },
+    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false, score: 100 },
+    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true, score: 100 },
+    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false, score: 100 },
 ];
 
 const DEFAULT_STATE: BaseState = {
@@ -35,7 +36,8 @@ const DEFAULT_STATE: BaseState = {
     gameRotation: [ GameType.Unspecified ],
     timerTimestamp: 0,
     timerDuration: 0,
-    lobbyOpen: true
+    lobbyOpen: true,
+    gameEnded: false,
 }
 
 export interface SocketContext {

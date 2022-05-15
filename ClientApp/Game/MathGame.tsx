@@ -1,7 +1,7 @@
 import * as React from "react";
 import { GameType } from "../Definitions/Socket/GameType";
 import { BaseState } from "./SocketContext";
-import { MathMessageType } from "../Definitions/Socket/MathGame";
+import { MathGameResults, MathMessageType } from "../Definitions/Socket/MathGame";
 
 interface PlayerState {
     options: string[];
@@ -10,6 +10,7 @@ interface PlayerState {
 
 export interface MathGameState {
     players: Record<string, PlayerState>;
+    results: MathGameResults[];
 }
 
 const TEST_PLAYER_STATE = {
@@ -20,7 +21,8 @@ const TEST_PLAYER_STATE = {
 };
 
 const DEFAULT_STATE: MathGameState = {
-    players: TEST_PLAYER_STATE
+    players: TEST_PLAYER_STATE,
+    results: []
 };
 
 interface Props {
@@ -38,6 +40,15 @@ export const useMathGame = (props: Props) => {
             { } break;
             case MathMessageType.GameStarted: {
                 
+            } break;
+            case MathMessageType.GameEnded: {
+                const parsed = JSON.parse(data);
+                setState(p => {
+                    return {
+                        ...p,
+                        results: parsed
+                    };
+                });
             } break;
             case MathMessageType.NewOptions: {
                 const parsed = JSON.parse(data);

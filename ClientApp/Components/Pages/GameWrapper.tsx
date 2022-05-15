@@ -4,6 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Player } from "../../Definitions/Socket/Player";
 import { useSocketContext } from "../../Game/SocketContext";
 import { useNavigate } from "react-router";
+import { GameResults } from "../UI/GameResults";
  
 const OutlinedBox = styled("div")(
     ({ theme }) => `
@@ -35,7 +36,7 @@ interface Props {
 const GameWrapper = (props: Props) => {
     const navigate = useNavigate();
     const socketContext = useSocketContext();
-    const { timerTimestamp, timerDuration, playerList, localPlayer } = socketContext.baseState;
+    const { timerTimestamp, timerDuration, playerList, localPlayer, gameEnded } = socketContext.baseState;
 
     const [timerCounter, setTimerCounter] = useState(0);
     const [timeText, setTimeText] = useState("9:99");
@@ -51,8 +52,8 @@ const GameWrapper = (props: Props) => {
 
     const updateTimer = () => {
         const remaining = getTimeRemaining();
-        const minutes = remaining.minutes;
-        const seconds = remaining.seconds;
+        const minutes = Math.max(remaining.minutes, 0);
+        const seconds = Math.max(remaining.seconds, 0);
         setTimeText(
             minutes + ':'
             + (seconds > 9 ? seconds : '0' + seconds)
@@ -72,97 +73,101 @@ const GameWrapper = (props: Props) => {
             width: "100%",
             paddingTop: "50px"
         }}>
-            <Box sx={{
-                width: "100%",
-                height: "75%",
-                display: "flex",
-                gap: "1rem"
-            }}>
+            {gameEnded ?
+                <GameResults timeRemaining={timeText} />
+                :
                 <Box sx={{
-                    display: "flex",
                     width: "100%",
-                    height: "100%",
-                    flexDirection: "column"
+                    height: "75%",
+                    display: "flex",
+                    gap: "1rem"
                 }}>
-                    <OutlinedBox sx={{
-                        width: "100%",
-                        height: "100%",
-                        position: "relative"
-                    }}>
-                        <Typography variant="h3" sx={{
-                            padding: "10px",
-                            opacity: "0.6",
-                            position: "absolute",
-                            right: "0px",
-                            top: "0px"
-                        }}>
-                            {timeText}
-                        </Typography>
-                        <HomeIcon onClick={() => {
-                            navigate("/");
-                        }} sx={{
-                            position: "absolute",
-                            bottom: "0px",
-                            right: "0px",
-                            fontSize: "5rem"
-                        }}/>
-                    </OutlinedBox>
-
                     <Box sx={{
                         display: "flex",
-                        alignItems: "center",
-                        padding: "5px"
+                        width: "100%",
+                        height: "100%",
+                        flexDirection: "column"
                     }}>
-                        <Typography variant="h4" sx={{
-                            marginRight: "30px"
-                        }}>You</Typography>
-                        <Typography variant="h5" sx={{
-                            opacity: "0.6"
-                        }}>0 pts</Typography>
+                        <OutlinedBox sx={{
+                            width: "100%",
+                            height: "100%",
+                            position: "relative"
+                        }}>
+                            <Typography variant="h3" sx={{
+                                padding: "10px",
+                                opacity: "0.6",
+                                position: "absolute",
+                                right: "0px",
+                                top: "0px"
+                            }}>
+                                {timeText}
+                            </Typography>
+                            <HomeIcon onClick={() => {
+                                navigate("/");
+                            }} sx={{
+                                position: "absolute",
+                                bottom: "0px",
+                                right: "0px",
+                                fontSize: "5rem"
+                            }}/>
+                        </OutlinedBox>
+
+                        <Box sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "5px"
+                        }}>
+                            <Typography variant="h4" sx={{
+                                marginRight: "30px"
+                            }}>You</Typography>
+                            <Typography variant="h5" sx={{
+                                opacity: "0.6"
+                            }}>0 pts</Typography>
+                        </Box>
+                    </Box>
+                    
+                    <Box sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                    }}>
+                        {
+                            playerList.map((player, i) => {
+                                if (player.id === localPlayer?.id) return;
+                                return (
+                                    <Box key={player.id}>
+                                        <OutlinedBox sx={{
+                                            height: "200px",
+                                            width: "250px",
+                                        }}>
+                                            {props.render(player.id)}
+                                        </OutlinedBox>
+                                        <Box sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            padding: "5px"
+                                        }}>
+                                            <Typography variant="h5" sx={{
+                                                alignSelf: "flex-start"
+                                            }}>
+                                                {player.name}
+                                            </Typography>
+                                            <Typography sx={{
+                                                marginLeft: "auto",
+                                                opacity: "0.6"
+                                            }}>
+                                                0 pts
+                                            </Typography>
+                                        </Box>
+                                        
+                                    </Box>
+                                )
+                            })
+                        }
                     </Box>
                 </Box>
-                
-                <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                }}>
-                    {
-                        playerList.map((player, i) => {
-                            if (player.id === localPlayer?.id) return;
-                            return (
-                                <Box key={player.id}>
-                                    <OutlinedBox sx={{
-                                        height: "200px",
-                                        width: "250px",
-                                    }}>
-                                        {props.render(player.id)}
-                                    </OutlinedBox>
-                                    <Box sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        padding: "5px"
-                                    }}>
-                                        <Typography variant="h5" sx={{
-                                            alignSelf: "flex-start"
-                                        }}>
-                                            {player.name}
-                                        </Typography>
-                                        <Typography sx={{
-                                            marginLeft: "auto",
-                                            opacity: "0.6"
-                                        }}>
-                                            0 pts
-                                        </Typography>
-                                    </Box>
-                                    
-                                </Box>
-                            )
-                        })
-                    }
-                </Box>
-            </Box>
+            }
         </Box>
     )
 }

@@ -6,6 +6,7 @@ import { GameType } from "./GameType";
 enum MathMessageType {
     None = 0,
     GameStarted,
+    GameEnded,
     SubmitSelection,
     NewOptions,
 }
@@ -33,6 +34,13 @@ const DEFAULT_STATE: MathGameState = {
     players: {},
     maxChoices: 3,
     optionCount: 10
+}
+
+// Results sent to the client when the game is finished
+interface GameResults {
+    player: string;
+    points: number;
+    cycles: number;
 }
 
 // Generate a random number that is either an integer or a decimal
@@ -159,5 +167,26 @@ export const startGame = (lobby: Lobby) => {
 }
 
 export const endGame = (lobby: Lobby) => {
-    
+    const state = lobby.gameState as MathGameState;
+
+    const results: GameResults[] = [];
+    lobby.getAllPlayers().forEach(p => {
+        // Ensure player has a state value
+        if (!state.players.hasOwnProperty(p.id)) return;
+        const playerState = state.players[p.id];
+
+        // Add this game's points to the player's total score
+        p.score += playerState.points;
+
+        results.push({
+            player: p.id,
+            points: playerState.points,
+            cycles: playerState.cycles
+        });
+    });
+
+    // Send results to all players
+    lobby.getAllPlayers().forEach(p => {
+        p.sendMessage(MathMessageType.GameEnded, GameType.Math, JSON.stringify(results));
+    });
 }
