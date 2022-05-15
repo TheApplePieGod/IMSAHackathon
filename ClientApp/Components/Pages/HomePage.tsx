@@ -1,8 +1,7 @@
 ﻿import * as React from "react";
 import { Box, Divider, Typography, Button, TextField, Dialog, DialogTitle } from "@mui/material";
+import Trees from '../UI/Trees';
 import { useNavigate } from "react-router-dom";
-
-
 
 const HomePage = () => {
 
@@ -34,31 +33,7 @@ const HomePage = () => {
 
     return (
         <React.Fragment>
-            <Box sx={{
-                position: "fixed",
-                left: "0px",
-                height: "80%",
-                width: "40%",
-                minWidth: "500px",
-                backgroundSize: "80% 100%",
-                backgroundRepeat: "no-repeat",
-                backgroundImage: "url(tree.png)",
-                backgroundPosition: "center",
-                bottom: "0px",
-            }}/>
-            <Box sx={{
-                position: "fixed",
-                right: "0px",
-                height: "80%",
-                width: "40%",
-                minWidth: "500px",
-                backgroundSize: "80% 100%",
-                backgroundRepeat: "no-repeat",
-                backgroundImage: "url(tree.png)",
-                backgroundPosition: "center",
-                bottom: "0px",
-                transform: "scaleX(-1)"
-            }}/>
+            <Trees/>
             <Box
                 sx={{
                     width: "100%",
@@ -113,8 +88,11 @@ const HomePage = () => {
                     <DialogTitle>Join a room</DialogTitle>
                     <Box sx={{ display: "flex", alignItems: "center", padding: "10px", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
                         <TextField variant="filled" sx={{
-                            width: "100%",
-                        }}
+                                width: "100%",
+                                "&. Mui-focused": {
+                                    color: "#FF0000"
+                                }
+                            }}
                             label={"Room Code"}
                             value={roomId}
                             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {setRoomId(e.target.value)}}
