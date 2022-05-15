@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 
 interface Props {
     timeRemaining: string;
+    getResult: (player: string) => React.ReactElement | undefined;
 }
 
 const OutlinedBox = styled("div")(
@@ -80,10 +81,21 @@ export const GameResults = (props: Props) => {
                     }
                 </OutlinedBox>
                 <Box sx={{ display: "flex", gap: "4rem" }}>
-                    <OutlinedBox sx={{  }}>
+                    <OutlinedBox>
                         <Typography variant="h4" sx={{ fontFamily: "'Manteiga Gorda'" }}>
                             {gameInfoMap[currentGame].name}
                         </Typography>
+                        {
+                            playerList.map((p, i) => {
+                                const res = props.getResult(p.id);
+                                if (!res) return;
+                                return (
+                                    <TextBox key={p.id} sx={{ justifyContent: "space-between" }}>
+                                        {res}
+                                    </TextBox>
+                                );
+                            })
+                        }
                     </OutlinedBox>
                     <OutlinedBox>
                         <Typography variant="h4">Total Rankings</Typography>

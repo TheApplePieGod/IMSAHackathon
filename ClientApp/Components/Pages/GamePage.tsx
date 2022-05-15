@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { styled, Box } from "@mui/material";
+import { styled, Box, Typography } from "@mui/material";
 import { useSocketContext } from "../../Game/SocketContext";
 import { GameType } from "../../Definitions/Socket/GameType";
 import GameWrapper from "./GameWrapper";
@@ -35,12 +35,33 @@ const GamePage = (props: Props) => {
         return 0;
     }
 
+    const getResult = (pid: string) => {
+        const player = socketContext.baseState.playerList.find(p => p.id == pid);
+        if (!player) return undefined;
+        
+        const gameState = socketContext.getGame(currentGame).state;
+        switch (currentGame) {
+            default: break;
+            case GameType.Math: {
+                if (!(gameState as MathGameState).players.hasOwnProperty(pid)) break;
+                const state = (gameState as MathGameState).players[pid];
+                return (
+                    <React.Fragment>
+                        <Typography variant="body1">{player.name}</Typography>
+                        <Typography variant="body1" color="textSecondary">{state.score} pts</Typography>
+                    </React.Fragment>
+                );
+            }
+        }
+        return undefined;
+    }
+
     return (
         <Box>
             {socketContext.baseState.lobbyOpen ?
                 <LobbyPage />
                 :
-                <GameWrapper render={renderGame} getPoints={getPoints} />
+                <GameWrapper render={renderGame} getPoints={getPoints} getResult={getResult} />
             }
         </Box>
     );

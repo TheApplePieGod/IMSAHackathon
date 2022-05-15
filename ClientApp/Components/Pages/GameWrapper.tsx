@@ -32,6 +32,7 @@ const StyledButton = styled(Button)(
 interface Props {
     render: (player: string) => React.ReactNode;
     getPoints: (player: string) => number;
+    getResult: (player: string) => React.ReactElement | undefined;
 }
 
 const GameWrapper = (props: Props) => {
@@ -75,7 +76,7 @@ const GameWrapper = (props: Props) => {
             paddingTop: "50px"
         }}>
             {gameEnded ?
-                <GameResults timeRemaining={timeText} />
+                <GameResults timeRemaining={timeText} getResult={props.getResult} />
                 :
                 <Box sx={{
                     width: "100%",
