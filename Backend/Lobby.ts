@@ -212,7 +212,7 @@ export class Lobby {
         });
 
         // Start the game timer
-        setTimeout(this.endGame.bind(this), this.params.gameLength * 1000);
+        setTimeout(this.endGame.bind(this), this.params.gameLength * 1);
     }
 }
 
