@@ -24,7 +24,7 @@ export const AppRoutes = () => {
                     <PageWrapper>
                         <Box>
                             <Routes>
-                                <Route path={'/'} element={<FoldingGameScreen />} />
+                                <Route path={'/'} element={<HomePage />} />
                                 <Route path={'join/:roomIdString'} element={<JoinPage/>} />
                                 <Route
                                     path={'play/:roomIdString/:name'}
