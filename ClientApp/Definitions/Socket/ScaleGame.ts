@@ -1,5 +1,9 @@
 export enum ScaleMessageType {
-    None = 0
+    None = 0,
+    GameStarted,
+    GameEnded,
+    SubmitAnswer,
+    NewScales,
 };
 
 export interface Animal {
@@ -10,4 +14,10 @@ export interface Animal {
 export interface Scale {
     leftSide: Animal[];
     rightSide: Animal[];
+}
+
+export interface ScaleGameResults {
+    player: string;
+    points: number;
+    cycles: number;
 }
