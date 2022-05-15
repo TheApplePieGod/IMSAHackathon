@@ -38,8 +38,8 @@ export class Lobby {
         this.currentRotation = 0;
         this.params = {
             gameLength: 30,
-            gameDelay: 10,
-            rotationCount: 1
+            gameDelay: 5,
+            rotationCount: 2
         };
 
         this.updateGameRotation();
@@ -178,7 +178,7 @@ export class Lobby {
     startNextGame = () => {
         if (!this.gameStarted) return;
 
-        if (this.currentRotation > this.params.rotationCount) {
+        if (this.currentRotation >= this.params.rotationCount) {
             this.endMatch();
             return;
         }
@@ -212,7 +212,7 @@ export class Lobby {
         });
 
         // Start the game timer
-        setTimeout(this.endGame.bind(this), this.params.gameLength * 1);
+        setTimeout(this.endGame.bind(this), this.params.gameLength * 1000);
     }
 }
 

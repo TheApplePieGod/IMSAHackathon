@@ -17,6 +17,7 @@ export const GameResults = (props: Props) => {
         >
             <Typography variant="h3">GAME OVER</Typography>
             <Typography variant="subtitle1">Next Game: {props.timeRemaining}</Typography>
+            
         </Box>
     );
 }

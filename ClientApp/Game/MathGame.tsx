@@ -6,6 +6,8 @@ import { MathGameResults, MathMessageType } from "../Definitions/Socket/MathGame
 interface PlayerState {
     options: string[];
     score: number;
+    selections: number[];
+    cycles: number;
 }
 
 export interface MathGameState {
@@ -16,8 +18,9 @@ export interface MathGameState {
 const TEST_PLAYER_STATE = {
     "player1": {
         options: ["17/8", "2", "15/6", "2.80", "3/2", "2.35", "3", "3/1.2"],
-        score: 200
-    }
+        score: 200,
+        selections: []
+    },
 };
 
 const DEFAULT_STATE: MathGameState = {
@@ -53,8 +56,26 @@ export const useMathGame = (props: Props) => {
             case MathMessageType.NewOptions: {
                 const parsed = JSON.parse(data);
                 setState(p => {
-                    p.players[parsed.id] = {
+                    p.players[parsed.player] = {
                         options: parsed.options,
+                        score: parsed.points,
+                        selections: [],
+                        cycles: parsed.cycles
+                    };
+
+                    return {
+                        ...p,
+                        players: { ...p.players }
+                    };
+                });
+            } break;
+            case MathMessageType.SubmitSelection: {
+                const parsed = JSON.parse(data);
+                console.log(parsed)
+                setState(p => {
+                    p.players[parsed.player] = {
+                        ...p.players[parsed.player],
+                        selections: [ ...p.players[parsed.player].selections, parsed.selection ],
                         score: parsed.points
                     };
 

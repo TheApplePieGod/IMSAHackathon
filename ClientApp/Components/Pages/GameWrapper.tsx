@@ -5,12 +5,12 @@ import { Player } from "../../Definitions/Socket/Player";
 import { useSocketContext } from "../../Game/SocketContext";
 import { useNavigate } from "react-router";
 import { GameResults } from "../UI/GameResults";
+import { render } from "react-dom";
  
 const OutlinedBox = styled("div")(
     ({ theme }) => `
         border: 3px solid #AFA87A;
         border-radius: 12px;
-        padding: 1rem;
         background-color: #D0C790;
     `
 );
@@ -31,6 +31,7 @@ const StyledButton = styled(Button)(
 
 interface Props {
     render: (player: string) => React.ReactNode;
+    getPoints: (player: string) => number;
 }
 
 const GameWrapper = (props: Props) => {
@@ -110,6 +111,7 @@ const GameWrapper = (props: Props) => {
                                 right: "0px",
                                 fontSize: "5rem"
                             }}/>
+                            {localPlayer && props.render(localPlayer.id)}
                         </OutlinedBox>
 
                         <Box sx={{
@@ -122,7 +124,7 @@ const GameWrapper = (props: Props) => {
                             }}>You</Typography>
                             <Typography variant="h5" sx={{
                                 opacity: "0.6"
-                            }}>0 pts</Typography>
+                            }}>{localPlayer ? props.getPoints(localPlayer.id) : 0} pts</Typography>
                         </Box>
                     </Box>
                     
@@ -157,7 +159,7 @@ const GameWrapper = (props: Props) => {
                                                 marginLeft: "auto",
                                                 opacity: "0.6"
                                             }}>
-                                                0 pts
+                                                {props.getPoints(player.id)} pts
                                             </Typography>
                                         </Box>
                                         

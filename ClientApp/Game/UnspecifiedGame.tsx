@@ -86,7 +86,8 @@ export const useUnspecifiedGame = (props: Props) => {
                         ...p,
                         timerTimestamp: parsed.timestamp,
                         timerDuration: parsed.duration,
-                        lobbyOpen: false
+                        lobbyOpen: false,
+                        gameEnded: false,
                     };
                 })
             } break;
