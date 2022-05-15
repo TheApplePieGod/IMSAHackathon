@@ -40,7 +40,7 @@ const HomePage = () => {
     return (
         <React.Fragment>
             <Box sx={{
-                position: "absolute",
+                position: "fixed",
                 width: "100%",
                 height: "100%",
                 visibility: {xs: "hidden", sm: "hidden", lg: "visible"}
