@@ -203,6 +203,8 @@ export const handleMessage = (lobby: Lobby, player: Player, messageType: ScaleMe
             if (!state.players.hasOwnProperty(player.id)) break;
             const playerState = state.players[player.id];
 
+            if (!playerState.answered) break;
+
             const scales = generateScales();
             playerState.weight = scales.weight;
             playerState.answer = scales.answer;

@@ -5,6 +5,7 @@ import { GameType } from "./GameType";
 enum FoldingMessageType {
     None = 0,
     GameStarted,
+    GameEnded,
     SubmitSelection,
     NewSequence,
 }
@@ -36,6 +37,7 @@ interface PlayerState {
     // solution: boolean[][] // Solution to player's own unique sequence
     points: number,
     cycles: number
+    answered: boolean;
 };
 
 interface FoldingGameState {
@@ -47,6 +49,13 @@ const DEFAULT_STATE: FoldingGameState = {
     players: {},
     paperSize: 4
 };
+
+// Results sent to the client when the game is finished
+interface GameResults {
+    player: string;
+    points: number;
+    cycles: number;
+}
 
 const instructionSet: Record<Instruction, number[]> = {
     [Instruction.HalfUp]: [2, 0, 1],        // Half-fold up
@@ -273,7 +282,7 @@ const findSolution = (instructions: Instruction[], sequence: Sequence) => {
     let paperToUnfold: boolean[][] = [];
     for (let i = 0; i < 4; i++) {
         paperToUnfold.push([])
-        for (let j = 0; j < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             if (finalPaper.layers[i][j] != 0) paperToUnfold[i].push(true);
             else paperToUnfold[i].push(false);
         }
@@ -282,7 +291,7 @@ const findSolution = (instructions: Instruction[], sequence: Sequence) => {
     // Get a deep copy the hole punches to assign "true" to where-ever the holes will end up when unfolding
     let solution: boolean[][] = JSON.parse(JSON.stringify(sequence.holes));
 
-    for (let i = instructions.length - 1; i > -1; i++) {
+    for (let i = instructions.length - 1; i >= 0; i--) {
         // Reverse engineer the instructions to get the solution matrix
         switch (instructions[i]) {
             case Instruction.HalfUp: 
@@ -411,27 +420,59 @@ export const handleMessage = (lobby: Lobby, player: Player, messageType: Folding
             if (!state.players.hasOwnProperty(player.id)) break;
             const playerState = state.players[player.id];
 
+            if (playerState.answered) break;
+
             const selections: number[][] = JSON.parse(data);
-            if (selections.length != state.paperSize) break;
 
             const solution = findSolution(playerState.instructions, playerState.sequence);
+            let points = 0;
+            let correct = 0;
             selections.forEach(position => {
-                if (solution[position[0]][position[1]] == true) playerState.points += 50;
+                if (solution[position[1]][position[0]]) {
+                    points += 50;
+                    correct++;
+                }
+                else
+                    points -= 50;
             });
+            
+            let totalHoles = 0;
+            solution.forEach(r => r.forEach(c => totalHoles += Number(c)));
+
+            playerState.points += Math.max(0, points);
+            playerState.answered = true;
+
+            // Send answer
+            lobby.getAllPlayers().forEach(p => {
+                p.sendMessage(FoldingMessageType.SubmitSelection, GameType.PaperFolding, JSON.stringify({
+                    player: player.id,
+                    correct,
+                    total: totalHoles
+                }));
+            });
+        } break;
+        case FoldingMessageType.NewSequence: {
+            // Ensure player has a state value
+            if (!state.players.hasOwnProperty(player.id)) break;
+            const playerState = state.players[player.id];
+
+            if (!playerState.answered) break;
 
             playerState.cycles++;
             playerState.instructions = generateInstructions();
             playerState.sequence = generateSequence(playerState.instructions);
+            playerState.answered = false;
 
             lobby.getAllPlayers().forEach(p => {
-                p.sendMessage(FoldingMessageType.NewSequence, GameType.Math, JSON.stringify({
+                p.sendMessage(FoldingMessageType.NewSequence, GameType.PaperFolding, JSON.stringify({
                     player: player.id,
                     instructions: playerState.instructions,
                     sequence: playerState.sequence,
-                    points: playerState.points
+                    points: playerState.points,
+                    cycles: playerState.cycles
                 }));
             })
-        }
+        } break;
     }
 }
 
@@ -442,17 +483,11 @@ export const startGame = (lobby: Lobby) => {
         let instructions: Instruction[] = generateInstructions();
         let sequence: Sequence = generateSequence(instructions);
         const playerState: PlayerState = {
-            // holes: [
-            //     [false, false, false, false],
-            //     [false, false, false, false],
-            //     [false, false, false, false],
-            //     [false, false, false, false]
-            // ],
             instructions: instructions,
             sequence: sequence,
-            // solution: findSolution(instructions, sequence)
             points: 0,
-            cycles: 1
+            cycles: 0,
+            answered: false
         };
         
         // Send this player's sequence to all players
@@ -461,7 +496,8 @@ export const startGame = (lobby: Lobby) => {
                 player: p.id,
                 instructions: playerState.instructions,
                 sequence: playerState.sequence,
-                points: 0
+                points: playerState.points,
+                cycles: playerState.cycles
             }));
         });
     
@@ -474,4 +510,29 @@ export const startGame = (lobby: Lobby) => {
     });
 
     lobby.gameState = state;
+}
+
+export const endGame = (lobby: Lobby) => {
+    const state = lobby.gameState as FoldingGameState;
+
+    const results: GameResults[] = [];
+    lobby.getAllPlayers().forEach(p => {
+        // Ensure player has a state value
+        if (!state.players.hasOwnProperty(p.id)) return;
+        const playerState = state.players[p.id];
+
+        // Add this game's score to the player's total score
+        p.score += playerState.points;
+
+        results.push({
+            player: p.id,
+            points: playerState.points,
+            cycles: playerState.cycles
+        });
+    });
+
+    // Send results to all players
+    lobby.getAllPlayers().forEach(p => {
+        p.sendMessage(FoldingMessageType.GameEnded, GameType.PaperFolding, JSON.stringify(results));
+    });
 }

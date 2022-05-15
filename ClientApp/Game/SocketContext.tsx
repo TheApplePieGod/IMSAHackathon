@@ -10,6 +10,7 @@ import { ConfirmDialog } from "../Components/UI/ConfirmDialog";
 import { useUnspecifiedGame } from "./UnspecifiedGame";
 import { useMathGame } from "./MathGame";
 import { useScaleGame } from "./ScaleGame";
+import { useFoldingGame } from "./FoldingGame";
 
 export interface BaseState {
     hostRoomId: string;
@@ -142,7 +143,7 @@ export const SocketContextProvider = (props: Props) => {
     const games: Record<GameType, GameContext> = {
         [GameType.Unspecified]: useUnspecifiedGame({ sendMessage: sendMessageType, baseState, setBaseState }),
         [GameType.Scales]: useScaleGame({ sendMessage: sendMessageType, baseState, setBaseState }),
-        [GameType.PaperFolding]: {} as GameContext,
+        [GameType.PaperFolding]: useFoldingGame({ sendMessage: sendMessageType, baseState, setBaseState }),
         [GameType.Math]: useMathGame({ sendMessage: sendMessageType, baseState, setBaseState }),
     };
 

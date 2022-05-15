@@ -45,7 +45,6 @@ const StyledButton = styled(Button)(
 );
 
 const ScaleGameScreen = (props: Props) => {
-
     const theme = useTheme();
 
     const socketContext = useSocketContext();
@@ -58,7 +57,6 @@ const ScaleGameScreen = (props: Props) => {
     const canvasSize = CANVAS_SIZE * canvasScale;
     const canvasMargin = CANVAS_MARGIN * canvasScale;
     const textSize = 30 * canvasScale;
-
 
     const drawImage = (debug: Boolean, ctx: CanvasRenderingContext2D, image: HTMLImageElement, ax: ImageAlign, ay: ImageAlign, x: number, y: number, width: number, height: number) => {
         if(debug){

@@ -89,6 +89,7 @@ export const useUnspecifiedGame = (props: Props) => {
                         lobbyOpen: false,
                         gameEnded: false,
                         matchEnded: false,
+                        rotationIndex: parsed.rotationIndex
                     };
                 })
             } break;
