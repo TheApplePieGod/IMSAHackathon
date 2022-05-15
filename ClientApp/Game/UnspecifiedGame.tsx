@@ -70,13 +70,44 @@ export const useUnspecifiedGame = (props: Props) => {
                 const parsed: Player = JSON.parse(data);
                 props.setBaseState((p) => {
                     const index = p.playerList.findIndex(e => e.id == parsed.id);
-                    if (index != -1) {
+                    if (index != -1)
                         p.playerList.splice(index, 1);
-                    }
 
                     return {
                         ...p,
                         playerList: [ ...p.playerList ],
+                    };
+                })
+            } break;
+            case UnspecifiedMessageType.GameStart: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    return {
+                        ...p,
+                        timerTimestamp: parsed.timestamp,
+                        timerDuration: parsed.duration,
+                        lobbyOpen: false,
+                        gameEnded: false,
+                        matchEnded: false,
+                    };
+                })
+            } break;
+            case UnspecifiedMessageType.GameEnd: {
+                const parsed = JSON.parse(data);
+                props.setBaseState((p) => {
+                    parsed.scores.forEach((s: any) => {
+                        const player = p.playerList.find(e => e.id == s.player);
+                        if (player)
+                            player.score = s.score;
+                    });
+
+                    return {
+                        ...p,
+                        timerTimestamp: parsed.timestamp,
+                        timerDuration: parsed.duration,
+                        gameEnded: true,
+                        matchEnded: parsed.lastGame,
+                        playerList: [...p.playerList]
                     };
                 })
             } break;
