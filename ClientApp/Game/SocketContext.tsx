@@ -18,9 +18,9 @@ export interface BaseState {
 }
 
 const TEST_PLAYER_LIST: Player[] = [
-    { name: "Player1", id: "player1", isHost: true, isCurrent: true },
-    { name: "Player2", id: "player2", isHost: false, isCurrent: false },
-    { name: "Player3", id: "player3", isHost: false, isCurrent: false },
+    { name: "Player1", id: "player1", isHost: true, isCurrent: true, ready: false },
+    { name: "Player2", id: "player2", isHost: false, isCurrent: false, ready: true },
+    { name: "Player3", id: "player3", isHost: false, isCurrent: false, ready: false },
 ];
 
 const DEFAULT_STATE: BaseState = {
@@ -116,8 +116,8 @@ export const SocketContextProvider = (props: Props) => {
         onMessage: processMessage
     });
 
-    const sendMessageType = (msgType: number, gameType: GameType, data: string) => {
-        const str = JSON.stringify({ msgType, gameType, data });
+    const sendMessageType = (messageType: number, gameType: GameType, data: string) => {
+        const str = JSON.stringify({ messageType, gameType, data });
         const blob = new Blob([str], {
             type: "application/json"
         });

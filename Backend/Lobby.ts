@@ -127,7 +127,7 @@ export class Lobby {
         
         // Send the generic game end message to all players
         this.getAllPlayers().forEach(p => {
-            p.sendMessage(GenericMessageType.GameEnded, GameType.None, JSON.stringify({
+            p.sendMessage(GenericMessageType.GameEnd, GameType.None, JSON.stringify({
                 timestamp: Date.now(),
                 delay: this.params.gameDelay * 1000
             }));
@@ -168,7 +168,7 @@ export class Lobby {
 
         // Send the generic game start message to all players
         this.getAllPlayers().forEach(p => {
-            p.sendMessage(GenericMessageType.GameStarted, GameType.None, JSON.stringify({
+            p.sendMessage(GenericMessageType.GameStart, GameType.None, JSON.stringify({
                 timestamp: Date.now(),
                 duration: this.params.gameLength * 1000
             }));

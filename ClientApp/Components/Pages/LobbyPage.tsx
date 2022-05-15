@@ -3,10 +3,12 @@ import { styled, Box, Typography, Tooltip, IconButton, Button } from "@mui/mater
 import { useSocketContext } from "../../Game/SocketContext";
 import { gameInfoMap } from "../../Definitions/GameInfo";
 import { GameType } from "../../Definitions/Socket/GameType";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { UnspecifiedMessageType } from "../../Definitions/Socket/UnspecifiedGame";
+import { Carousel } from "../UI/Carousel";
 
 interface Props {
 
@@ -35,6 +37,7 @@ const StyledButton = styled(Button)(
 );
 
 const LobbyPage = (props: Props) => {
+    const navigate = useNavigate();
     const socketContext = useSocketContext();
     let { localPlayer, playerList, currentGame } = socketContext.baseState;
     currentGame = GameType.Scales;
@@ -51,6 +54,16 @@ const LobbyPage = (props: Props) => {
         const link = `${getProtocol()}://${location.host}/join/${roomId}`;
         navigator.clipboard.writeText(link);
         // dispatch(openSnackbar(SnackbarStatus.Success, "Share link copied to clipboard", 2000))
+    }
+
+    const ready = () => {
+        if (!localPlayer) return;
+
+        socketContext.sendMessage(
+            UnspecifiedMessageType.ReadyState,
+            GameType.Unspecified,
+            JSON.stringify({ state: !localPlayer.ready })
+        );
     }
 
     return (
@@ -73,17 +86,7 @@ const LobbyPage = (props: Props) => {
                 }}
             >
                 <Box sx={{ height: "50%", flexGrow: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                    <OutlinedBox
-                        sx={{
-                            height: "100%",
-                            width: "100%",
-                            ...(gameInfoMap[currentGame].previewURL == "" ? {
-                                background: "#D0C790"
-                            } : {
-                                backgroudImage: `url(${gameInfoMap[currentGame].previewURL})`
-                            })
-                        }}
-                    />
+                    <Carousel images={["/images/fern.png", "/images/title.png", "/images/tree.png"]} />
                     <Typography variant="h4" sx={{ fontFamily: "'Manteiga Gorda'", textAlign: "center" }}>
                         {gameInfoMap[currentGame].name}
                     </Typography>
@@ -116,18 +119,28 @@ const LobbyPage = (props: Props) => {
                             playerList.map((elem, i) => {
                                 return (
                                     <Box
-                                        key={i}
+                                        key={elem.id}
                                         sx={{
                                             display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "left",
-                                            gap: "0.25rem"
+                                            justifyContent: "space-between"
                                         }}
                                     >
-                                        <Typography variant="body1">{elem.name}</Typography>
-                                        {elem.isHost &&
-                                            <Typography sx={{ fontSize: "8px" }} color="secondary">[HOST]</Typography>
-                                        }
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "left",
+                                                gap: "0.25rem"
+                                            }}
+                                        >
+                                            <Typography variant="body1">{elem.name}</Typography>
+                                            {elem.isHost &&
+                                                <Typography style={{ fontSize: "10px" }} color="secondary">[HOST]</Typography>
+                                            }
+                                        </Box>
+                                        <Typography variant="body1" sx={{ opacity: elem.ready ? 1 : 0.6 }}>
+                                            {elem.ready ? "Ready!" : "Not Ready"}
+                                        </Typography>
                                     </Box>
                                 );
                             })
@@ -142,14 +155,14 @@ const LobbyPage = (props: Props) => {
                                 gap: "1rem"
                             }}
                         >
-                            <StyledButton variant="contained">
-                                <Typography>Ready</Typography>
+                            <StyledButton sx={{ maxWidth: "110px", minWidth: "110px" }} variant="contained" onClick={ready}>
+                                <Typography>{localPlayer?.ready ? "Unready" : "Ready"}</Typography>
                             </StyledButton>
-                            <StyledButton sx={{ padding: "0rem 0" }} variant="contained">
+                            <StyledButton sx={{ padding: 0 }} variant="contained" onClick={() => navigate("/")}>
                                 <HomeIcon sx={{ opacity: "0.5", fontSize: "64px" }} />
                             </StyledButton>
-                            <StyledButton variant="contained">
-                                <SettingsIcon />
+                            <StyledButton sx={{ padding: 0 }} variant="contained">
+                                <SettingsIcon sx={{ opacity: "0.5", fontSize: "64px" }} />
                             </StyledButton>
                         </Box>
                     </Box>

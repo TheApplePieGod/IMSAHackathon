@@ -5,6 +5,7 @@ export enum UnspecifiedMessageType {
     PlayerLeave,
     RoomCreated,
     KickPlayer,
-    GameStarted,
-    GameEnded
+    GameStart,
+    GameEnd,
+    ReadyState
 };

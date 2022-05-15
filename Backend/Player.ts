@@ -7,12 +7,14 @@ export class Player {
     name: string;
     id: string;
     isHost: boolean;
+    ready: boolean;
 
     constructor(socket: ws.WebSocket, name: string, id: string, isHost: boolean) {
         this.socket = socket;
         this.name = name;
         this.id = id;
         this.isHost = isHost;
+        this.ready = false;
     }
 
     // Check if this player is valid and still connected
@@ -45,7 +47,8 @@ export class Player {
             name: this.name,
             id: this.id,
             isHost: this.isHost,
-            isCurrent: false
+            isCurrent: false,
+            ready: this.ready
         };
     }
 

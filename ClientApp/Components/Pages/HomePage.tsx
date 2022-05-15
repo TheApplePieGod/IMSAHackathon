@@ -46,7 +46,7 @@ const HomePage = () => {
                 }}
             >
                 <Box sx={{
-                    backgroundImage: "url(title.png)",
+                    backgroundImage: "url(/images/title.png)",
                     backgroundPosition: "center",
                     width: "600px",
                     height: "200px",

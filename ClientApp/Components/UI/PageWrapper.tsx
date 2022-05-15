@@ -41,7 +41,7 @@ export const PageWrapper = (props: Props) => {
                     width: "75%",
                     height: "300px",
                     backgroundRepeat: "no-repeat",
-                    backgroundImage: "url(fern.png)",
+                    backgroundImage: "url(/images/fern.png)",
                     backgroundPosition: "center",
                     backgroundSize: "100%",
                     transform: "translateY(50%)"
